@@ -17,5 +17,6 @@ playwright-report/
 .wrangler/
 .claude/
 
-# Foto dan video dokumentasi asli, berukuran besar dan memuat orang sungguhan.
-/assets/photo/
+# Hanya foto WebP yang ikut repo; video dan surat tetap lokal.
+/assets/photo/*
+!/assets/photo/*.webp
