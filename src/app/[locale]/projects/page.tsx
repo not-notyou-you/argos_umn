@@ -1,7 +1,7 @@
 import { getLocale, getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { ContentCard, StatusBadge } from '@/components/display';
-import { Container, EmptyState, PageHeader } from '@/components/ui';
+import { Container, EmptyState, PageHero } from '@/components/ui';
 import { listProjects } from '@/lib/queries';
 
 export const dynamic = 'force-dynamic';
@@ -31,8 +31,9 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
   );
 
   return (
+    <>
+    <PageHero title={t('title')} intro={t('intro')} meta={t('count', { n: rows.length })} />
     <Container className="py-12">
-      <PageHeader title={t('title')} intro={t('intro')} />
       <div className="flex flex-wrap items-center justify-between gap-3 pb-6">
         <div className="flex flex-wrap gap-2">
           {tab(undefined, t('all'))}
@@ -47,12 +48,13 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
       {rows.length === 0 ? (
         <EmptyState message={t('empty')} />
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
           {rows.map(({ project, coverKey, logoKey }) => (
             <ContentCard key={project.id} href={`${prefix}/projects/${project.slug}`} name={project.name} description={project.description} coverKey={coverKey} logoKey={logoKey} meta={<StatusBadge status={project.status} />} />
           ))}
         </div>
       )}
     </Container>
+    </>
   );
 }

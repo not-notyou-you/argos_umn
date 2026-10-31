@@ -1,8 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
+import { ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { imageSrcSet, imageUrl } from '@/lib/media-url';
 import { excerpt } from '@/lib/util';
+import { Helmet } from './helmet';
 
 export function StatusBadge({ status }: { status: 'done' | 'on_progress' | 'cancelled' }) {
   const t = useTranslations('status');
@@ -22,8 +24,8 @@ export function StatusBadge({ status }: { status: 'done' | 'on_progress' | 'canc
 
 export function CoverPlaceholder({ className = '' }: { className?: string }) {
   return (
-    <div className={`slash-bg flex items-center justify-center bg-ink ${className}`}>
-      <img src="/brand/argos-helmet-white.png" alt="" className="h-2/5 max-h-32 w-auto opacity-90" />
+    <div className={`slash-bg flex items-center justify-center bg-ink text-white ${className}`}>
+      <Helmet className="h-2/5 max-h-32 w-auto opacity-90" />
     </div>
   );
 }
@@ -58,12 +60,17 @@ export function ContentCard({
   meta?: React.ReactNode;
 }) {
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-md border border-line bg-white transition-shadow hover:shadow-md">
-      <Cover storageKey={coverKey} alt="" sizes="(min-width: 1024px) 384px, (min-width: 640px) 50vw, 100vw" className="aspect-[16/10] w-full" />
-      <div className="flex flex-1 flex-col gap-2 p-4">
+    <article className="group reveal relative flex h-full flex-col">
+      <div className="relative overflow-hidden rounded-md">
+        <Cover storageKey={coverKey} alt="" sizes="(min-width: 1024px) 384px, (min-width: 640px) 50vw, 100vw" className="zoom-img aspect-[4/3] w-full" />
+        <span aria-hidden className="absolute top-3 right-3 flex size-10 translate-y-1 items-center justify-center rounded-full bg-brand-orange text-ink opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+          <ArrowUpRight size={18} />
+        </span>
+      </div>
+      <div className="flex flex-1 flex-col gap-2 pt-4">
         <div className="flex items-center gap-2">
           {logoKey && <img src={imageUrl(logoKey, 480)} alt="" className="size-8 rounded-sm object-contain" />}
-          <h3 className="text-xl leading-7 font-semibold">
+          <h3 className="text-[22px] leading-7 font-bold">
             <Link href={href} className="after:absolute after:inset-0 group-hover:text-teal-text">{name}</Link>
           </h3>
         </div>
@@ -77,7 +84,7 @@ export function ContentCard({
 export function Avatar({ name, photoKey, size = 96 }: { name: string; photoKey: string | null; size?: number }) {
   const initials = name.split(/\s+/).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
   return (
-    <div style={{ width: size, height: size }} className="hexagon flex shrink-0 items-center justify-center bg-teal-text font-bold text-white">
+    <div style={{ width: size, height: size }} className="member-photo hexagon flex shrink-0 items-center justify-center bg-teal-text font-bold text-white transition-colors group-hover:bg-orange-text">
       {photoKey ? (
         <img src={imageUrl(photoKey, 480)} alt="" className="size-full object-cover" loading="lazy" />
       ) : (

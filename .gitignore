@@ -16,3 +16,6 @@ test-results/
 playwright-report/
 .wrangler/
 .claude/
+
+# Foto dan video dokumentasi asli, berukuran besar dan memuat orang sungguhan.
+/assets/photo/

@@ -4,6 +4,8 @@ Spesifikasi tampilan untuk kebutuhan di [PRD.md](PRD.md). Rujukan brand: Argos C
 
 ## 1. Arah desain
 
+> Tampilan publik kini mengikuti arah **Editorial Tech**: header gelap, hero panel miring, judul ExtraBold, helmet SVG beranimasi (`src/components/helmet.tsx`), dan animasi tanpa library lewat CSS. Wireframe di bawah adalah rancangan awal; acuan akhirnya adalah kode.
+
 **"Technical, open, proud of the work."** Website ini adalah portofolio komunitas teknologi. Karya dan orangnya menjadi tokoh utama, sedangkan brand menjadi bingkai.
 
 Bahasa visualnya berasal dari logo helmet:

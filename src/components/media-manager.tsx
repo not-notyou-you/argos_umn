@@ -202,16 +202,18 @@ export function MediaManager({ owner, items }: { owner: Owner; items: Item[] }) 
         ) : (
           <div className="mt-2 flex flex-col gap-2">
             <p className="text-sm leading-[22px]">{t('videoHint')}</p>
-            <input
-              type="file"
-              accept="video/mp4,video/webm"
-              aria-label={t('video')}
-              className="input"
-              onChange={(e) => {
-                uploadFiles([...(e.target.files ?? [])]);
-                e.target.value = '';
-              }}
-            />
+            <label className="inline-flex min-h-11 w-fit cursor-pointer items-center rounded-sm border border-teal-text px-4 font-semibold text-teal-text hover:bg-surface-muted has-[:focus-visible]:outline-2">
+              {t('chooseFile')}
+              <input
+                type="file"
+                accept="video/mp4,video/webm"
+                className="sr-only"
+                onChange={(e) => {
+                  uploadFiles([...(e.target.files ?? [])]);
+                  e.target.value = '';
+                }}
+              />
+            </label>
             <div className="flex gap-2">
               <input value={videoLink} onChange={(e) => setVideoLink(e.target.value)} aria-label={t('linkLabel')} placeholder={t('linkLabel')} className="input" />
               <Button type="button" variant="secondary" className="shrink-0" disabled={!videoLink} onClick={() => run(() => addMediaLink(owner, 'video', videoLink), () => setVideoLink(''))}>{t('addLink')}</Button>

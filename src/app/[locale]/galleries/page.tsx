@@ -1,7 +1,7 @@
 import { getLocale, getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { GalleryGrid } from '@/components/media-view';
-import { Container, EmptyState, PageHeader, buttonClass } from '@/components/ui';
+import { Container, EmptyState, PageHero, buttonClass } from '@/components/ui';
 import { galleryItems } from '@/lib/queries';
 
 export const dynamic = 'force-dynamic';
@@ -29,8 +29,9 @@ export default async function GalleriesPage({ searchParams }: { searchParams: Pr
   ];
 
   return (
+    <>
+    <PageHero title={t('title')} intro={t('intro')} meta={t('count', { n: items.length })} />
     <Container className="py-12">
-      <PageHeader title={t('title')} intro={t('intro')} />
       <div className="flex gap-2 pb-6">
         {tabs.map((tab) => (
           <Link
@@ -50,5 +51,6 @@ export default async function GalleriesPage({ searchParams }: { searchParams: Pr
         </div>
       )}
     </Container>
+    </>
   );
 }

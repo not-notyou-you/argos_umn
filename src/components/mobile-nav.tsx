@@ -15,20 +15,20 @@ export function MobileNav({ items }: { items: { href: string; label: string }[] 
         aria-expanded={open}
         aria-label={open ? t('close') : t('menu')}
         onClick={() => setOpen(!open)}
-        className="flex size-11 cursor-pointer items-center justify-center text-ink"
+        className="flex size-11 cursor-pointer items-center justify-center text-white"
       >
         {open ? <X /> : <Menu />}
       </button>
       {open && (
-        <nav aria-label={t('menu')} className="absolute inset-x-0 top-16 border-b border-line bg-white p-4 shadow-md">
+        <nav aria-label={t('menu')} className="absolute inset-x-0 top-[72px] border-b border-white/10 bg-ink p-4 shadow-md">
           <ul className="flex flex-col gap-1">
             {items.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} onClick={() => setOpen(false)} className="flex min-h-11 items-center font-semibold text-ink">{item.label}</Link>
+                <Link href={item.href} onClick={() => setOpen(false)} className="flex min-h-12 items-center text-2xl font-bold text-white">{item.label}</Link>
               </li>
             ))}
           </ul>
-          <Suspense><LanguageSwitch /></Suspense>
+          <Suspense><LanguageSwitch dark /></Suspense>
         </nav>
       )}
     </div>

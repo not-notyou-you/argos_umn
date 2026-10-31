@@ -8,7 +8,7 @@ import { StatusBadge } from '@/components/display';
 import { buttonClass } from '@/components/ui';
 import { db } from '@/db';
 import { projects } from '@/db/schema';
-import { mediaKey, ownerMedia, participants } from '@/lib/queries';
+import { listProjects, mediaKey, ownerMedia, participants } from '@/lib/queries';
 import { excerpt } from '@/lib/util';
 
 export const dynamic = 'force-dynamic';
@@ -28,11 +28,14 @@ export default async function ProjectDetail({ params }: Props) {
   const t = await getTranslations('project');
   const locale = await getLocale();
   const prefix = locale === 'id' ? '' : `/${locale}`;
-  const [media, team, logoKey] = await Promise.all([
+  const [media, team, logoKey, all] = await Promise.all([
     ownerMedia({ project: project.id }),
     participants('project', project.id),
     mediaKey(project.logoMediaId),
+    listProjects(),
   ]);
+  const position = all.findIndex((row) => row.project.id === project.id);
+  const following = all.length > 1 ? all[(position + 1) % all.length].project : null;
 
   const buttons = [
     { label: t('open'), url: project.projectUrl, visible: project.projectUrlVisible, variant: 'accent' as const },
@@ -49,6 +52,8 @@ export default async function ProjectDetail({ params }: Props) {
       badge={<StatusBadge status={project.status} />}
       media={media}
       aboutLabel={t('about')}
+      mediaLabel={t('gallery')}
+      next={following ? { href: `${prefix}/projects/${following.slug}`, name: following.name, label: t('next') } : undefined}
       description={project.description}
       teamLabel={t('team')}
       team={team}

@@ -8,7 +8,7 @@ const variants = {
   primary: 'bg-teal-text text-white hover:bg-[#265a65]',
   accent: 'bg-brand-orange text-ink hover:bg-[#f9a56d]',
   secondary: 'border border-teal-text text-teal-text hover:bg-surface-muted',
-  ghost: 'border border-white/50 text-white hover:bg-white/10',
+  ghost: 'border border-white/50 text-white hover:bg-white hover:text-ink',
   danger: 'bg-danger text-white hover:bg-[#8f1e18]',
 };
 
@@ -40,8 +40,20 @@ export function PageHeader({ title, intro, action }: { title: string; intro?: st
   );
 }
 
+export function PageHero({ title, intro, meta }: { title: string; intro?: string; meta?: string }) {
+  return (
+    <section className="on-dark slash-bg bg-ink pt-16 pb-14 md:pt-24 md:pb-20">
+      <Container>
+        {meta && <p className="flex items-center gap-3 text-sm font-semibold text-brand-light-blue"><span className="slash" aria-hidden /> {meta}</p>}
+        <h1 className="rise display mt-4 text-white">{title}</h1>
+        {intro && <p className="rise mt-4 max-w-[52ch] text-lg leading-8 text-[#d3d6da]" style={{ animationDelay: '120ms' }}>{intro}</p>}
+      </Container>
+    </section>
+  );
+}
+
 export function SectionLabel({ children }: { children: ReactNode }) {
-  return <p className="label text-orange-text">{children}</p>;
+  return <p className="label flex items-center gap-3 text-orange-text"><span className="slash" aria-hidden />{children}</p>;
 }
 
 export function EmptyState({ message, action }: { message: string; action?: ReactNode }) {
@@ -76,5 +88,5 @@ export function Notice({ tone = 'info', children }: { tone?: 'info' | 'error' | 
 }
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
-  return <section className={`rounded-md border border-line p-4 md:p-6 ${className}`}>{children}</section>;
+  return <section className={`rounded-md border border-line p-4 shadow-[0_1px_2px_rgb(28_31_36/0.04)] md:p-6 ${className}`}>{children}</section>;
 }

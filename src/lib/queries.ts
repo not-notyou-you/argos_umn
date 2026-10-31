@@ -217,3 +217,14 @@ export async function galleryItems(filter: 'all' | 'project' | 'activity', limit
     .limit(limit + 1);
   return { items: rows.slice(0, limit), hasMore: rows.length > limit };
 }
+
+export async function homeStats() {
+  const [row] = await db.execute<{ projects: number; activities: number; members: number; media: number }>(sql`
+    select
+      (select count(*)::int from projects where is_published) as projects,
+      (select count(*)::int from activities where is_published) as activities,
+      (select count(*)::int from members where status = 'onboarded') as members,
+      (select count(*)::int from media where purpose = 'gallery') as media
+  `);
+  return row;
+}

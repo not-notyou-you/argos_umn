@@ -85,7 +85,7 @@ Seluruh halaman dalam `rancangan.md`, UI dua bahasa (ID/EN), akun buatan komite,
 
 - **FR-P1** Menampilkan carousel foto yang dikelola komite.
 - **FR-P2** Menjelaskan untuk orang awam: apa itu Argos Club @ UMN, hubungannya dengan TIOF, tujuan, dan kegiatannya.
-- **FR-P2a** Menampilkan fokus utama Argos Clubs (high-performance computing, AI, virtualisasi, keamanan siber, jaringan) dan fokus tambahan UMN (**Big Data dan ERP**).
+- **FR-P2a** Menampilkan semua bidang fokus dalam satu daftar yang setara: high-performance computing, AI, virtualisasi, keamanan siber, jaringan, Big Data, dan ERP.
 - **FR-P3** Semua teks bisa diubah komite.
 - **FR-P4** Menampilkan cuplikan project dan aktivitas terbaru, serta tautan bergabung ke join.theiofoundation.org.
 

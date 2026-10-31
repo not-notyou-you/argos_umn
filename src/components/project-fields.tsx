@@ -28,7 +28,7 @@ export function ProjectFields({ project }: { project: Project }) {
       <fieldset className="flex flex-col gap-3">
         <legend className="font-semibold text-ink">{e('buttons')}</legend>
         {buttons.map((b) => (
-          <div key={b.key} className="grid items-center gap-2 sm:grid-cols-[200px_90px_1fr]">
+          <div key={b.key} className="grid items-center gap-2 sm:grid-cols-[190px_120px_1fr]">
             <span>{b.label}</span>
             <label className="flex min-h-11 items-center gap-2">
               <input type="checkbox" name={`${b.key}Visible`} defaultChecked={b.visible} className="size-5" />

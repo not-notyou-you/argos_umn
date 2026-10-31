@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
 import { loginAction } from '@/actions/auth';
 import { ProgressiveForm } from '@/components/forms';
+import { Helmet } from '@/components/helmet';
 import { Field } from '@/components/ui';
 import { getCurrentUser } from '@/lib/auth';
 
@@ -14,17 +15,23 @@ export default async function LoginPage() {
   if (user) redirect(user.mustChangePassword ? '/account/password' : user.memberId ? '/me/profile' : '/committee');
   const t = await getTranslations('auth');
   return (
-    <main className="flex min-h-screen items-center justify-center bg-surface-muted p-4">
-      <div className="w-full max-w-sm rounded-md border border-line bg-white p-6">
-        <Link href="/"><img src="/brand/argos-logo.png" alt="Argos Clubs" width={110} className="mx-auto h-auto" /></Link>
-        <h1 className="mt-4 text-center text-xl leading-7 font-semibold">{t('title')}</h1>
-        <div className="mt-6">
-          <ProgressiveForm action={loginAction} submitLabel={t('submit')}>
-            <Field label={t('username')} htmlFor="username"><input id="username" name="username" required autoComplete="username" className="input" /></Field>
-            <Field label={t('password')} htmlFor="password"><input id="password" name="password" type="password" required autoComplete="current-password" className="input" /></Field>
-          </ProgressiveForm>
+    <main className="grid min-h-screen lg:grid-cols-[1.15fr_1fr]">
+      <div className="on-dark slash-bg relative isolate hidden items-end overflow-hidden bg-ink p-12 text-white lg:flex">
+        <Helmet animated className="absolute top-1/2 left-1/2 -z-10 w-[62%] -translate-x-1/2 -translate-y-1/2 text-white/90" />
+        <p className="text-sm font-semibold">#WeAreArgonauts</p>
+      </div>
+      <div className="flex items-center justify-center bg-white p-6">
+        <div className="w-full max-w-sm">
+          <Link href="/"><img src="/brand/argos-logo.png" alt="Argos Clubs" width={84} className="h-auto" /></Link>
+          <h1 className="mt-6 text-[32px] leading-10 font-extrabold">{t('title')}</h1>
+          <div className="mt-8">
+            <ProgressiveForm action={loginAction} submitLabel={t('submit')}>
+              <Field label={t('username')} htmlFor="username"><input id="username" name="username" required autoComplete="username" className="input" /></Field>
+              <Field label={t('password')} htmlFor="password"><input id="password" name="password" type="password" required autoComplete="current-password" className="input" /></Field>
+            </ProgressiveForm>
+          </div>
+          <p className="mt-4 text-sm leading-[22px]">{t('forgot')}</p>
         </div>
-        <p className="mt-4 text-sm leading-[22px]">{t('forgot')}</p>
       </div>
     </main>
   );

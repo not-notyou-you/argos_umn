@@ -1,8 +1,9 @@
 import { getLocale, getTranslations } from 'next-intl/server';
-import { ContentCard } from '@/components/display';
-import { Container, EmptyState, PageHeader } from '@/components/ui';
+import Link from 'next/link';
+import { Cover } from '@/components/display';
+import { Container, EmptyState, PageHero } from '@/components/ui';
 import { listActivities } from '@/lib/queries';
-import { formatDate } from '@/lib/util';
+import { excerpt, formatDate } from '@/lib/util';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,28 +22,41 @@ export default async function ActivitiesPage({ searchParams }: { searchParams: P
   }
 
   return (
-    <Container className="py-12">
-      <PageHeader title={t('title')} intro={t('intro')} />
-      <form role="search" className="flex gap-2 pb-6">
-        <input name="q" defaultValue={q} aria-label={t('search')} placeholder={t('search')} className="input max-w-56" />
-        <button className="sr-only">{c('search')}</button>
-      </form>
-      {rows.length === 0 ? (
-        <EmptyState message={t('empty')} />
-      ) : (
-        <div className="flex flex-col gap-10">
-          {[...years].map(([year, items]) => (
-            <section key={year}>
-              <h2 className="pb-4 text-2xl leading-8 font-bold">{year}</h2>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {items.map(({ activity, coverKey, logoKey }) => (
-                  <ContentCard key={activity.id} href={`${prefix}/activities/${activity.slug}`} name={activity.name} description={activity.description} coverKey={coverKey} logoKey={logoKey} meta={<p className="text-sm">{formatDate(activity.activityDate, locale)}</p>} />
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      )}
-    </Container>
+    <>
+      <PageHero title={t('title')} intro={t('intro')} meta={t('count', { n: rows.length })} />
+      <Container className="py-12">
+        <form role="search" className="flex gap-2 pb-8">
+          <input name="q" defaultValue={q} aria-label={t('search')} placeholder={t('search')} className="input max-w-64" />
+          <button className="sr-only">{c('search')}</button>
+        </form>
+        {rows.length === 0 ? (
+          <EmptyState message={t('empty')} />
+        ) : (
+          <div className="flex flex-col gap-14">
+            {[...years].map(([year, items]) => (
+              <section key={year} className="grid gap-6 lg:grid-cols-[200px_1fr]">
+                <h2 className="heading-xl lg:sticky lg:top-24 lg:self-start">{year}</h2>
+                <ol className="flex flex-col">
+                  {items.map(({ activity, coverKey }) => (
+                    <li key={activity.id} className="reveal group relative grid items-center gap-5 border-t border-line py-6 md:grid-cols-[150px_1fr_260px]">
+                      <p className="font-semibold text-teal-text">{formatDate(activity.activityDate, locale)}</p>
+                      <div>
+                        <h3 className="text-[clamp(1.5rem,2.6vw,2.25rem)] leading-tight font-bold">
+                          <Link href={`${prefix}/activities/${activity.slug}`} className="after:absolute after:inset-0 group-hover:text-teal-text">{activity.name}</Link>
+                        </h3>
+                        <p className="mt-2 line-clamp-2">{excerpt(activity.description)}</p>
+                      </div>
+                      <div className="overflow-hidden rounded-md">
+                        <Cover storageKey={coverKey} alt="" sizes="(min-width: 768px) 260px, 100vw" className="zoom-img aspect-[16/10] w-full" />
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            ))}
+          </div>
+        )}
+      </Container>
+    </>
   );
 }

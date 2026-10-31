@@ -3,8 +3,10 @@ import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { logoutAction } from '@/actions/auth';
 import { getCurrentUser } from '@/lib/auth';
+import { Helmet } from './helmet';
 import { LanguageSwitch } from './language-switch';
 import { MobileNav } from './mobile-nav';
+import { NavLinks } from './nav-links';
 import { Container, buttonClass } from './ui';
 
 export async function getPublicNav() {
@@ -31,21 +33,17 @@ export async function Header() {
   const accountLabel = user ? (user.memberId ? t('myProfile') : t('committee')) : t('login');
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur">
-      <a href="#content" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:bg-white focus:p-2">{t('skip')}</a>
-      <Container className="flex h-16 items-center justify-between gap-4">
-        <Link href={prefix || '/'} className="flex items-center gap-2 font-bold text-ink">
-          <img src="/brand/argos-helmet.png" alt="" width={36} height={34} />
+    <header className="on-dark sticky top-0 z-40 border-b border-white/10 bg-ink/90 text-white backdrop-blur-md">
+      <a href="#content" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-2 focus:bg-white focus:p-2 focus:text-ink">{t('skip')}</a>
+      <Container className="flex h-[72px] items-center justify-between gap-4">
+        <Link href={prefix || '/'} className="flex items-center gap-2.5 font-bold text-white">
+          <Helmet className="size-8" />
           <span>Argos Club @ UMN</span>
         </Link>
-        <nav aria-label={t('menu')} className="hidden items-center gap-6 lg:flex">
-          {items.map((item) => (
-            <Link key={item.href} href={item.href} className="font-semibold hover:text-teal-text">{item.label}</Link>
-          ))}
-        </nav>
+        <NavLinks items={items} label={t('menu')} />
         <div className="hidden items-center gap-3 lg:flex">
-          <LanguageSwitch />
-          <Link href={accountHref} className={buttonClass('secondary')}>{accountLabel}</Link>
+          <LanguageSwitch dark />
+          <Link href={accountHref} className={buttonClass('ghost')}>{accountLabel}</Link>
         </div>
         <MobileNav items={[...items, { href: accountHref, label: accountLabel }]} />
       </Container>
@@ -56,22 +54,27 @@ export async function Header() {
 export async function Footer() {
   const t = await getTranslations('footer');
   return (
-    <footer className="on-dark slash-bg bg-ink text-[#d8dadd]">
-      <Container className="grid gap-8 py-12 md:grid-cols-3">
-        <div className="flex flex-col gap-3">
-          <img src="/brand/argos-logo-white.png" alt="Argos Clubs" width={110} height={110} className="h-auto" />
-          <p>{t('part')}</p>
+    <footer className="on-dark relative isolate overflow-hidden bg-ink text-[#d8dadd]">
+      <Helmet className="absolute -right-[8%] -bottom-[30%] -z-10 w-[44%] text-white/[0.04]" />
+      <Container className="grid gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr] md:py-20">
+        <div>
+          <p className="text-[clamp(1.75rem,3.4vw,2.75rem)] leading-tight font-extrabold tracking-tight text-white">Argos Club<br />@ UMN</p>
+          <p className="mt-3">{t('tagline')}</p>
+          <p className="mt-6 max-w-[38ch] text-sm leading-[22px]">{t('part')}</p>
         </div>
-        <div className="flex flex-col gap-3">
-          <img src="/brand/umn-logo.webp" alt="Universitas Multimedia Nusantara" width={96} className="h-auto" />
-          <p>{t('host')}</p>
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-5">
+            <img src="/brand/argos-logo-white.png" alt="Argos Clubs" width={84} className="h-auto" />
+            <img src="/brand/umn-logo.webp" alt="Universitas Multimedia Nusantara" width={72} className="h-auto" />
+          </div>
+          <p className="text-sm leading-[22px]">{t('host')}</p>
         </div>
         <div>
           <p className="label text-brand-light-blue">{t('links')}</p>
           <ul className="mt-3 flex flex-col gap-2">
-            <li><a className="underline hover:text-white" href="https://theiofoundation.org/argos-clubs" target="_blank" rel="noreferrer">{t('site')}</a></li>
-            <li><a className="underline hover:text-white" href="https://community.theiofoundation.org/argos-clubs" target="_blank" rel="noreferrer">{t('community')}</a></li>
-            <li><a className="underline hover:text-white" href="https://join.theiofoundation.org" target="_blank" rel="noreferrer">{t('join')}</a></li>
+            <li><a className="hover:text-white" href="https://theiofoundation.org/argos-clubs" target="_blank" rel="noreferrer">{t('site')} ↗</a></li>
+            <li><a className="hover:text-white" href="https://community.theiofoundation.org/argos-clubs" target="_blank" rel="noreferrer">{t('community')} ↗</a></li>
+            <li><a className="hover:text-white" href="https://join.theiofoundation.org" target="_blank" rel="noreferrer">{t('join')} ↗</a></li>
           </ul>
         </div>
       </Container>

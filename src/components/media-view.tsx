@@ -95,19 +95,12 @@ export function MediaGrid({ items, name }: { items: ViewItem[]; name: string }) 
 
   return (
     <div className="flex flex-col gap-3">
-      {photos[0]?.storageKey ? (
-        <button onClick={() => setOpen(0)} aria-label={t('open', { n: 1 })} className="cursor-zoom-in overflow-hidden rounded-md">
-          <img src={imageUrl(photos[0].storageKey, 1600)} alt={alt(photos[0], 1)} className="aspect-[16/10] w-full object-cover" />
-        </button>
-      ) : (
-        <CoverPlaceholderClient className="aspect-[16/10] w-full rounded-md" />
-      )}
-      {photos.length > 1 && (
-        <ul className="grid grid-cols-4 gap-2 md:grid-cols-6">
-          {photos.slice(1).map((photo, i) => (
-            <li key={photo.id}>
-              <button onClick={() => setOpen(i + 1)} aria-label={t('open', { n: i + 2 })} className="block w-full cursor-zoom-in overflow-hidden rounded-sm">
-                <img src={imageUrl(photo.storageKey!, 480)} alt={alt(photo, i + 2)} loading="lazy" className="aspect-square w-full object-cover" />
+      {photos.length > 0 && (
+        <ul className="grid auto-rows-[120px] grid-cols-2 gap-3 md:auto-rows-[190px] md:grid-cols-4">
+          {photos.map((photo, i) => (
+            <li key={photo.id} className={i === 0 ? 'col-span-2 row-span-2' : i % 5 === 3 ? 'md:col-span-2' : ''}>
+              <button onClick={() => setOpen(i)} aria-label={t('open', { n: i + 1 })} className="group block size-full cursor-zoom-in overflow-hidden rounded-md">
+                <img src={imageUrl(photo.storageKey!, i === 0 ? 960 : 480)} alt={alt(photo, i + 1)} loading="lazy" className="zoom-img size-full object-cover" />
               </button>
             </li>
           ))}
@@ -127,9 +120,9 @@ export function GalleryGrid({ items }: { items: ViewItem[] }) {
       <ul className="columns-2 gap-3 md:columns-3 lg:columns-4">
         {items.map((item, i) => (
           <li key={item.id} className="mb-3 break-inside-avoid">
-            <button onClick={() => setOpen(i)} aria-label={item.altText ?? item.caption ?? t('photo', { n: i + 1 })} className="relative block w-full cursor-zoom-in overflow-hidden rounded-md">
+            <button onClick={() => setOpen(i)} aria-label={item.altText ?? item.caption ?? t('photo', { n: i + 1 })} className="group relative block w-full cursor-zoom-in overflow-hidden rounded-md">
               {item.kind === 'image' && item.storageKey ? (
-                <img src={imageUrl(item.storageKey, 480)} alt={item.altText ?? item.caption ?? ''} loading="lazy" className="w-full" />
+                <img src={imageUrl(item.storageKey, 480)} alt={item.altText ?? item.caption ?? ''} loading="lazy" className="zoom-img w-full" />
               ) : (
                 <>
                   <CoverPlaceholderClient className="aspect-video w-full" />

@@ -5,7 +5,7 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { DetailPage } from '@/components/detail';
 import { db } from '@/db';
 import { activities } from '@/db/schema';
-import { mediaKey, ownerMedia, participants } from '@/lib/queries';
+import { listActivities, mediaKey, ownerMedia, participants } from '@/lib/queries';
 import { excerpt, formatDate } from '@/lib/util';
 
 export const dynamic = 'force-dynamic';
@@ -23,13 +23,17 @@ export default async function ActivityDetail({ params }: Props) {
   const activity = await getActivity((await params).slug);
   if (!activity) notFound();
   const t = await getTranslations('activity');
+  const p = await getTranslations('project');
   const locale = await getLocale();
   const prefix = locale === 'id' ? '' : `/${locale}`;
-  const [media, team, logoKey] = await Promise.all([
+  const [media, team, logoKey, all] = await Promise.all([
     ownerMedia({ activity: activity.id }),
     participants('activity', activity.id),
     mediaKey(activity.logoMediaId),
+    listActivities(),
   ]);
+  const position = all.findIndex((row) => row.activity.id === activity.id);
+  const following = all.length > 1 ? all[(position + 1) % all.length].activity : null;
 
   return (
     <DetailPage
@@ -37,9 +41,11 @@ export default async function ActivityDetail({ params }: Props) {
       backLabel={t('back')}
       name={activity.name}
       logoKey={logoKey}
-      badge={<p className="font-semibold">{formatDate(activity.activityDate, locale)}</p>}
+      badge={<p className="text-lg font-semibold text-white">{formatDate(activity.activityDate, locale)}</p>}
       media={media}
       aboutLabel={t('about')}
+      mediaLabel={p('gallery')}
+      next={following ? { href: `${prefix}/activities/${following.slug}`, name: following.name, label: t('next') } : undefined}
       description={activity.description}
       teamLabel={t('team')}
       team={team}
