@@ -1,0 +1,77 @@
+x-app-env: &app-env
+  PUBLIC_BASE_URL: ${PUBLIC_BASE_URL}
+  DATABASE_URL: postgres://argos:${POSTGRES_PASSWORD}@db:5432/argos_umn
+  MEDIA_DIR: /data/media
+  ORIGIN_SHARED_SECRET: ${ORIGIN_SHARED_SECRET:-}
+
+services:
+  app:
+    build: { context: ., target: app }
+    restart: unless-stopped
+    depends_on:
+      db: { condition: service_healthy }
+    environment: *app-env
+    volumes:
+      - media:/data/media
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:3000/api/health').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  db:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: argos_umn
+      POSTGRES_USER: argos
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD wajib diisi}
+    volumes:
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U argos -d argos_umn']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    command: tunnel --no-autoupdate --protocol quic run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:?TUNNEL_TOKEN wajib diisi}
+    depends_on:
+      app: { condition: service_healthy }
+
+  backup:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    entrypoint: ['/bin/sh', '/scripts/backup-loop.sh']
+    depends_on:
+      db: { condition: service_healthy }
+    volumes:
+      - ./scripts:/scripts:ro
+      - ./backups:/backups
+      - media:/data/media:ro
+
+  # Perintah sekali jalan: docker compose run --rm tools npm run db:migrate
+  tools:
+    build: { context: ., target: build }
+    profiles: [tools]
+    environment:
+      <<: *app-env
+      SEED_PRESIDENT_PASSWORD: ${SEED_PRESIDENT_PASSWORD:-}
+      SEED_VICE_PRESIDENT_PASSWORD: ${SEED_VICE_PRESIDENT_PASSWORD:-}
+      SEED_SECRETARY_1_PASSWORD: ${SEED_SECRETARY_1_PASSWORD:-}
+      SEED_SECRETARY_2_PASSWORD: ${SEED_SECRETARY_2_PASSWORD:-}
+    depends_on:
+      db: { condition: service_healthy }
+    volumes:
+      - media:/data/media
+
+volumes:
+  pgdata:
+  media:

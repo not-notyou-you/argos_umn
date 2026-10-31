@@ -1,0 +1,95 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-brand-orange: #f79552;
+  --color-brand-light-blue: #66b5c5;
+  --color-brand-dark-blue: #50919f;
+  --color-brand-dark-gray: #4e5056;
+  --color-brand-light-gray: #89898e;
+  --color-ink: #1c1f24;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f6f8f9;
+  --color-teal-text: #2f6d7a;
+  --color-orange-text: #a84e17;
+  --color-danger: #b3261e;
+  --color-line: #dfe3e6;
+
+  --font-sans: var(--font-montserrat), Helvetica, Arial, sans-serif;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--color-surface);
+    color: var(--color-brand-dark-gray);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  h1, h2, h3, h4 {
+    color: var(--color-ink);
+    text-wrap: balance;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-teal-text);
+  outline-offset: 2px;
+}
+
+.on-dark :focus-visible {
+  outline-color: var(--color-brand-orange);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.hexagon {
+  clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0 50%);
+}
+
+.slash-bg {
+  background-image: repeating-linear-gradient(
+    115deg,
+    rgb(102 181 197 / 0.12) 0 28px,
+    transparent 28px 84px
+  );
+}
+
+.label {
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.input {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-brand-light-gray);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.input:disabled {
+  background: var(--color-surface-muted);
+}
+
+.prose-text {
+  white-space: pre-line;
+  max-width: 70ch;
+}

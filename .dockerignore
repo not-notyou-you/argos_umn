@@ -1,0 +1,11 @@
+node_modules
+.next
+.git
+.env
+.env.*
+data
+backups
+test-results
+playwright-report
+assets/logos/umn/third-party
+worker
