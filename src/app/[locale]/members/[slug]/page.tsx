@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
-import { Avatar, Cover, StatusBadge } from '@/components/display';
+import { Cover, MemberPortrait, StatusBadge } from '@/components/display';
 import { Container } from '@/components/ui';
 import { db } from '@/db';
 import { media, members } from '@/db/schema';
@@ -40,12 +40,16 @@ export default async function MemberDetail({ params }: Props) {
   const today = todayInJakarta();
   const line = [member.showMajor ? member.major : '', member.showCohort && member.cohort ? t('cohortOf', { year: member.cohort }) : ''].filter(Boolean).join(' · ');
 
+  const current = member.status === 'onboarded' ? positions.find((p) => isPositionActive(p, today)) : undefined;
+  const showProjects = member.showProjects && involvement.projects.length > 0;
+  const showActivities = member.showActivities && involvement.activities.length > 0;
+
   const Item = ({ href, name, coverKey, meta }: { href: string; name: string; coverKey: string | null; meta: React.ReactNode }) => (
     <li>
-      <Link href={href} className="flex items-center gap-3 rounded-md border border-line p-2 hover:border-teal-text">
-        <Cover storageKey={coverKey} alt="" sizes="80px" className="h-14 w-20 shrink-0 rounded-sm" />
-        <span className="min-w-0">
-          <span className="block truncate font-semibold text-ink">{name}</span>
+      <Link href={href} className="group flex h-full items-center gap-4 rounded-md bg-surface-muted p-3 transition-colors hover:bg-line">
+        <Cover storageKey={coverKey} alt="" sizes="112px" className="aspect-[4/3] w-28 shrink-0 rounded-sm" />
+        <span className="flex min-w-0 flex-col items-start gap-1">
+          <span className="line-clamp-2 font-semibold text-heading group-hover:text-teal-text">{name}</span>
           {meta}
         </span>
       </Link>
@@ -53,53 +57,63 @@ export default async function MemberDetail({ params }: Props) {
   );
 
   return (
-    <Container className="py-8 md:py-12">
-      <Link href={`${prefix}/members`} className="font-semibold text-teal-text">← {t('back')}</Link>
-      <div className="flex flex-wrap items-center gap-6 py-6">
-        <Avatar name={member.fullName} photoKey={member.showPhoto ? photoKey : null} size={140} />
-        <div>
-          <h1 className="text-[30px] leading-[38px] font-bold md:text-[40px] md:leading-[48px]">{member.fullName}</h1>
-          {line && <p className="mt-1">{line}</p>}
-          <p className="label mt-2 text-teal-text">{t(member.status)}</p>
+    <>
+      <section className="on-dark slash-move bg-ink pt-8 pb-14 text-white md:pb-20 lg:pb-24">
+        <Container>
+          <Link href={`${prefix}/members`} className="font-semibold text-[#d8dbdf] hover:text-white">← {t('back')}</Link>
+          <div className="mt-10 lg:mt-14 lg:ml-[calc(320px+4rem)]">
+            {current && <p className="text-lg font-bold text-brand-orange">{current.name}</p>}
+            <h1 className="rise heading-xl mt-2 text-white">{member.fullName}</h1>
+            <p className="mt-4 text-lg leading-8 text-[#d3d6da]">{[line, t(member.status)].filter(Boolean).join(' · ')}</p>
+          </div>
+        </Container>
+      </section>
+
+      <Container className="grid gap-12 pb-20 lg:grid-cols-[320px_1fr] lg:gap-16 md:pb-28">
+        <div className="-mt-8 lg:-mt-48">
+          <div className="on-dark cut-corner relative mx-auto aspect-[3/4] w-56 overflow-hidden bg-ink shadow-xl md:w-64 lg:sticky lg:top-[96px] lg:w-full">
+            <MemberPortrait name={member.fullName} photoKey={member.showPhoto ? photoKey : null} showInitials />
+          </div>
         </div>
-      </div>
 
-      {positions.length > 0 && (
-        <section className="py-4">
-          <h2 className="label text-orange-text">{t('positions')}</h2>
-          <ol className="mt-3 flex flex-col gap-2">
-            {positions.map((p, i) => {
-              const current = member.status === 'onboarded' && isPositionActive(p, today);
-              return (
-                <li key={i} className="flex flex-wrap items-center gap-x-3">
-                  <span aria-hidden className={`size-2.5 rounded-full ${current ? 'bg-brand-orange' : 'border border-brand-dark-gray'}`} />
-                  <span className="font-semibold text-ink">{p.name}</span>
-                  <span>{formatMonth(p.startDate, locale)} – {p.endDate ? formatMonth(p.endDate, locale) : t('now')}</span>
-                </li>
-              );
-            })}
-          </ol>
-        </section>
-      )}
+        <div className="flex min-w-0 flex-col gap-14 lg:pt-14">
+          {positions.length > 0 && (
+            <section>
+              <h2 className="text-2xl leading-8 font-bold">{t('positions')}</h2>
+              <ol className="mt-6 flex flex-col gap-6 border-l-2 border-line pl-6">
+                {positions.map((p, i) => {
+                  const active = member.status === 'onboarded' && isPositionActive(p, today);
+                  return (
+                    <li key={i} className="relative">
+                      <span aria-hidden className={`absolute top-1.5 -left-[33px] size-3.5 rounded-full ring-4 ring-surface ${active ? 'bg-brand-orange' : 'bg-brand-light-gray'}`} />
+                      <p className="text-lg leading-7 font-semibold text-heading">{p.name}</p>
+                      <p className="text-sm leading-6">{formatMonth(p.startDate, locale)} – {p.endDate ? formatMonth(p.endDate, locale) : t('now')}</p>
+                    </li>
+                  );
+                })}
+              </ol>
+            </section>
+          )}
 
-      <div className="grid gap-8 py-4 md:grid-cols-2">
-        {member.showProjects && involvement.projects.length > 0 && (
-          <section>
-            <h2 className="label text-orange-text">{t('projects')}</h2>
-            <ul className="mt-3 flex flex-col gap-2">
-              {involvement.projects.map((p) => <Item key={p.id} href={`${prefix}/projects/${p.slug}`} name={p.name} coverKey={p.coverKey} meta={<StatusBadge status={p.status} />} />)}
-            </ul>
-          </section>
-        )}
-        {member.showActivities && involvement.activities.length > 0 && (
-          <section>
-            <h2 className="label text-orange-text">{t('activities')}</h2>
-            <ul className="mt-3 flex flex-col gap-2">
-              {involvement.activities.map((a) => <Item key={a.id} href={`${prefix}/activities/${a.slug}`} name={a.name} coverKey={a.coverKey} meta={<span className="text-sm">{formatDate(a.activityDate, locale)}</span>} />)}
-            </ul>
-          </section>
-        )}
-      </div>
-    </Container>
+          {showProjects && (
+            <section>
+              <h2 className="text-2xl leading-8 font-bold">{t('projects')}</h2>
+              <ul className="mt-6 grid gap-3 xl:grid-cols-2">
+                {involvement.projects.map((p) => <Item key={p.id} href={`${prefix}/projects/${p.slug}`} name={p.name} coverKey={p.coverKey} meta={<StatusBadge status={p.status} />} />)}
+              </ul>
+            </section>
+          )}
+
+          {showActivities && (
+            <section>
+              <h2 className="text-2xl leading-8 font-bold">{t('activities')}</h2>
+              <ul className="mt-6 grid gap-3 xl:grid-cols-2">
+                {involvement.activities.map((a) => <Item key={a.id} href={`${prefix}/activities/${a.slug}`} name={a.name} coverKey={a.coverKey} meta={<span className="text-sm">{formatDate(a.activityDate, locale)}</span>} />)}
+              </ul>
+            </section>
+          )}
+        </div>
+      </Container>
+    </>
   );
 }

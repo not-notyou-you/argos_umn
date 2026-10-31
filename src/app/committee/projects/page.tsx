@@ -19,7 +19,7 @@ export default async function CommitteeProjects() {
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6">
       <PageHeader title={t('projects')} />
-      <Card className="bg-white">
+      <Card className="bg-surface">
         <ActionForm action={createProject} submitLabel={t('createDraft')} className="flex flex-wrap items-end gap-3">
           <div className="min-w-60 flex-1"><Field label={t('newProject')} htmlFor="name"><input id="name" name="name" required maxLength={120} className="input" /></Field></div>
         </ActionForm>
@@ -27,8 +27,8 @@ export default async function CommitteeProjects() {
       <ul className="flex flex-col gap-2">
         {rows.map((project) => (
           <li key={project.id}>
-            <Link href={`/committee/projects/${project.id}`} className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-line bg-white p-3 hover:border-teal-text">
-              <span className="font-semibold text-ink">{project.name}</span>
+            <Link href={`/committee/projects/${project.id}`} className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-line bg-surface p-3 hover:border-teal-text">
+              <span className="font-semibold text-heading">{project.name}</span>
               <span className="flex items-center gap-3"><StatusBadge status={project.status} /><span className="text-sm">{project.isPublished ? c('published') : c('draft')}</span></span>
             </Link>
           </li>

@@ -23,9 +23,9 @@ export default async function SystemPage() {
       <Notice>{t('protected')} {t('seederOnly')}</Notice>
       <ul className="flex flex-col gap-2">
         {rows.map((account) => (
-          <li key={account.id} className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-line bg-white p-3">
+          <li key={account.id} className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-line bg-surface p-3">
             <div>
-              <p className="font-semibold text-ink">{account.username}</p>
+              <p className="font-semibold text-heading">{account.username}</p>
               <p className="text-sm leading-[22px]">{t('lastLogin')}: {account.lastLoginAt ? time.format(account.lastLoginAt) : t('never')}</p>
             </div>
             {account.id === user.accountId ? (

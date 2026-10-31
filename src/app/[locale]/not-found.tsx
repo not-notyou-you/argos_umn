@@ -1,11 +1,15 @@
-import { getTranslations } from 'next-intl/server';
-import { ButtonLink, Container, EmptyState } from '@/components/ui';
+import { getLocale, getTranslations } from 'next-intl/server';
+import { ErrorScreen } from '@/components/error-screen';
+import { ButtonLink } from '@/components/ui';
 
 export default async function NotFound() {
   const t = await getTranslations('errors');
+  const locale = await getLocale();
+  const prefix = locale === 'id' ? '' : `/${locale}`;
   return (
-    <Container className="py-20">
-      <EmptyState message={t('notFoundTitle')} action={<ButtonLink href="/">{t('home')}</ButtonLink>} />
-    </Container>
+    <ErrorScreen code="404" title={t('notFoundTitle')} body={t('notFoundBody')}>
+      <ButtonLink href={prefix || '/'} variant="accent">{t('home')}</ButtonLink>
+      <ButtonLink href={`${prefix}/projects`} variant="ghost">{t('seeProjects')}</ButtonLink>
+    </ErrorScreen>
   );
 }

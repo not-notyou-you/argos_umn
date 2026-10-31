@@ -46,7 +46,7 @@ export function DetailPage({
     <>
       <section className="on-dark relative isolate flex min-h-[62svh] items-end overflow-hidden bg-ink">
         {cover?.storageKey ? (
-          <img src={imageUrl(cover.storageKey, 1600)} srcSet={imageSrcSet(cover.storageKey)} sizes="100vw" alt={cover.altText ?? name} className="ken-burns absolute inset-0 -z-20 size-full object-cover" />
+          <img src={imageUrl(cover.storageKey, 1600)} srcSet={imageSrcSet(cover.storageKey)} sizes="100vw" alt={cover.altText ?? name} className="media-loading ken-burns absolute inset-0 -z-20 size-full object-cover" />
         ) : (
           <CoverPlaceholderClient className="absolute inset-0 -z-20" />
         )}

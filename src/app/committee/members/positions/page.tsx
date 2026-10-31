@@ -19,16 +19,16 @@ export default async function PositionsPage() {
     <div className="mx-auto flex max-w-3xl flex-col gap-6">
       <Link href="/committee/members" className="font-semibold text-teal-text">← {t('members')}</Link>
       <PageHeader title={t('managePositions')} />
-      <Card className="bg-white">
+      <Card className="bg-surface">
         <ActionForm action={createPosition} submitLabel={t('addPosition')} resetOnSuccess>
           <Field label={t('positionName')} htmlFor="name"><input id="name" name="name" required maxLength={60} className="input" /></Field>
         </ActionForm>
       </Card>
       <ul className="flex flex-col gap-2">
         {rows.map((position) => (
-          <li key={position.id} className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-line bg-white p-3">
+          <li key={position.id} className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-line bg-surface p-3">
             <span>
-              <span className="font-semibold text-ink">{position.name}</span>
+              <span className="font-semibold text-heading">{position.name}</span>
               {position.grantsCommittee && <span className="ml-2 text-sm text-teal-text">{t('grantsAccess')}</span>}
             </span>
             {position.isLocked ? <span className="text-sm">{t('builtIn')}</span> : <ActionButton action={deletePosition.bind(null, position.id)} label={c('delete')} variant="danger" />}

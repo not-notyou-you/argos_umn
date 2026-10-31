@@ -1,6 +1,7 @@
 import { getLocale, getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { Cover } from '@/components/display';
+import { FilterBar, SearchField } from '@/components/filter-bar';
 import { Container, EmptyState, PageHero } from '@/components/ui';
 import { listActivities } from '@/lib/queries';
 import { excerpt, formatDate } from '@/lib/util';
@@ -10,7 +11,6 @@ export const dynamic = 'force-dynamic';
 export default async function ActivitiesPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const { q } = await searchParams;
   const t = await getTranslations('activity');
-  const c = await getTranslations('common');
   const locale = await getLocale();
   const prefix = locale === 'id' ? '' : `/${locale}`;
   const rows = await listActivities({ q: q?.slice(0, 80) });
@@ -23,12 +23,11 @@ export default async function ActivitiesPage({ searchParams }: { searchParams: P
 
   return (
     <>
-      <PageHero title={t('title')} intro={t('intro')} meta={t('count', { n: rows.length })} />
+      <PageHero title={t('title')} intro={t('intro')} />
       <Container className="py-12">
-        <form role="search" className="flex gap-2 pb-8">
-          <input name="q" defaultValue={q} aria-label={t('search')} placeholder={t('search')} className="input max-w-64" />
-          <button className="sr-only">{c('search')}</button>
-        </form>
+        <FilterBar>
+          <SearchField label={t('search')} value={q} clearHref={`${prefix}/activities`} />
+        </FilterBar>
         {rows.length === 0 ? (
           <EmptyState message={t('empty')} />
         ) : (

@@ -2,6 +2,8 @@ import { and, asc, eq, ilike } from 'drizzle-orm';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { createMember } from '@/actions/members';
+import { FilterBar, SearchField } from '@/components/filter-bar';
+import { FilterSelect } from '@/components/filter-select';
 import { ActionForm } from '@/components/forms';
 import { Card, Field, PageHeader, buttonClass } from '@/components/ui';
 import { db } from '@/db';
@@ -29,8 +31,8 @@ export default async function CommitteeMembers({ searchParams }: { searchParams:
     <div className="mx-auto flex max-w-5xl flex-col gap-6">
       <PageHeader title={t('members')} action={<Link href="/committee/members/positions" className={buttonClass('secondary')}>{t('managePositions')}</Link>} />
 
-      <Card className="bg-white">
-        <h2 className="pb-3 font-semibold text-ink">{t('newMember')}</h2>
+      <Card className="bg-surface">
+        <h2 className="pb-3 font-semibold text-heading">{t('newMember')}</h2>
         <ActionForm action={createMember} submitLabel={t('createMember')} resetOnSuccess>
           <div className="grid gap-3 sm:grid-cols-2">
             <Field label={c('name')} htmlFor="fullName"><input id="fullName" name="fullName" required maxLength={120} className="input" /></Field>
@@ -41,21 +43,17 @@ export default async function CommitteeMembers({ searchParams }: { searchParams:
         </ActionForm>
       </Card>
 
-      <form role="search" className="flex flex-wrap gap-2">
-        <input name="q" defaultValue={q} aria-label={t('searchMember')} placeholder={t('searchMember')} className="input max-w-64" />
-        <select name="status" defaultValue={filter ?? ''} aria-label={c('status')} className="input max-w-48">
-          <option value="">{t('allStatuses')}</option>
-          <option value="onboarded">{m('onboarded')}</option>
-          <option value="offboarded">{m('offboarded')}</option>
-        </select>
-        <button className={buttonClass('secondary')}>{c('search')}</button>
-      </form>
+      <FilterBar>
+        <SearchField label={t('searchMember')} value={q} clearHref={{ pathname: '/committee/members', query: filter ? { status: filter } : {} }}>
+          <FilterSelect name="status" label={c('status')} defaultValue={filter ?? ''} options={[{ value: '', label: t('allStatuses') }, { value: 'onboarded', label: m('onboarded') }, { value: 'offboarded', label: m('offboarded') }]} />
+        </SearchField>
+      </FilterBar>
 
       <ul className="flex flex-col gap-2">
         {rows.map((member) => (
           <li key={member.id}>
-            <Link href={`/committee/members/${member.id}`} className="grid gap-1 rounded-md border border-line bg-white p-3 hover:border-teal-text sm:grid-cols-[1fr_100px_140px_110px]">
-              <span className="font-semibold text-ink">{member.fullName}</span>
+            <Link href={`/committee/members/${member.id}`} className="grid gap-1 rounded-md border border-line bg-surface p-3 hover:border-teal-text sm:grid-cols-[1fr_100px_140px_110px]">
+              <span className="font-semibold text-heading">{member.fullName}</span>
               <span>{member.cohort ?? '—'}</span>
               <span>{latestPosition(positions.get(member.id))?.name ?? '—'}</span>
               <span>{m(member.status)}</span>

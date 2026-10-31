@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1932 1932" fill="#89898e">
+<style>
+polygon { animation: idle 1.6s ease-in-out infinite; }
+@keyframes idle { 0%, 100% { opacity: .18; } 40% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { polygon { animation: none; opacity: .6; } }
+</style>
+<polygon points="212,1395 328,1369 403,1498 300,1546" style="animation-delay:0ms"/>
+<polygon points="351,1635 448,1577 522,1704 436,1781" style="animation-delay:70ms"/>
+<polygon points="45,1103 266,1122 227,1191 277,1281 155,1294" style="animation-delay:140ms"/>
+<polygon points="177,809 394,901 318,1033 77,983" style="animation-delay:210ms"/>
+<polygon points="333,541 512,696 439,824 236,707" style="animation-delay:280ms"/>
+<polygon points="509,235 646,464 560,614 395,432" style="animation-delay:350ms"/>
+<polygon points="592,94 831,94 913,449 751,449" style="animation-delay:420ms"/>
+<polygon points="966,94 1182,94 1150,449 1004,449" style="animation-delay:490ms"/>
+<polygon points="1317,94 1554,94 1402,449 1241,449" style="animation-delay:560ms"/>
+<polygon points="1719,94 1849,318 1601,602 1513,450" style="animation-delay:630ms"/>
+<polygon points="711,547 1456,547 1656,892 1643,941 1888,1365 1690,1300 1517,1000 1057,1000 1160,1179 1443,1179 1633,1508 1443,1837 1062,1837 841,1453 738,1632 856,1837 711,1837 338,1192" style="animation-delay:700ms"/>
+<polygon points="1145,1051 1487,1051 1531,1127 1189,1127" style="animation-delay:770ms"/>
+</svg>

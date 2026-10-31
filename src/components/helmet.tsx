@@ -14,11 +14,11 @@ const BODY =
   '711,547 1456,547 1656,892 1643,941 1888,1365 1690,1300 1517,1000 1057,1000 1160,1179 1443,1179 1633,1508 1443,1837 1062,1837 841,1453 738,1632 856,1837 711,1837 338,1192';
 const VISOR = '1145,1051 1487,1051 1531,1127 1189,1127';
 
-export function Helmet({ className = '', animated = false }: { className?: string; animated?: boolean }) {
+export function Helmet({ className = '', animated = false, idle = false }: { className?: string; animated?: boolean; idle?: boolean }) {
   const blade = (index: number) =>
-    animated ? { className: 'blade', style: { animationDelay: `${index * 70}ms` } } : {};
+    animated ? { className: 'blade', style: { animationDelay: `${index * 70}ms` } } : idle ? { style: { animationDelay: `${index * 70}ms` } } : {};
   return (
-    <svg viewBox="0 0 1932 1932" aria-hidden className={className} fill="currentColor">
+    <svg viewBox="0 0 1932 1932" aria-hidden className={`${idle ? 'helmet-idle' : ''} ${className}`} fill="currentColor">
       {LOWER.map((points, i) => <polygon key={points} points={points} {...blade(i)} />)}
       {BLADES.map((points, i) => <polygon key={points} points={points} {...blade(i + 2)} />)}
       <polygon points={BODY} {...blade(10)} />

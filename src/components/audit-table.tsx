@@ -14,10 +14,10 @@ export async function AuditTable({ limit }: { limit: number }) {
     .limit(limit);
   const time = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Jakarta' });
   return (
-    <div className="overflow-x-auto rounded-md border border-line bg-white">
+    <div className="overflow-x-auto rounded-md border border-line bg-surface">
       <table className="w-full text-left text-sm leading-[22px]">
         <thead>
-          <tr className="border-b border-line text-ink">
+          <tr className="border-b border-line text-heading">
             <th className="p-3">{t('time')}</th>
             <th className="p-3">{t('actor')}</th>
             <th className="p-3">{t('action')}</th>

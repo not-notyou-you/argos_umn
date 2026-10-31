@@ -30,8 +30,8 @@ export default async function RequestsPage() {
       <PageHeader title={t('requests')} />
       {pending.length === 0 && <EmptyState message={t('noRequests')} />}
       {pending.map(({ request, member, project, activity }) => (
-        <Card key={request.id} className="flex flex-col gap-2 bg-white">
-          <p><strong className="text-ink">{member}</strong> → {project ?? activity}</p>
+        <Card key={request.id} className="flex flex-col gap-2 bg-surface">
+          <p><strong className="text-heading">{member}</strong> → {project ?? activity}</p>
           {request.note && <p className="prose-text">{request.note}</p>}
           <RequestDecision requestId={request.id} />
         </Card>

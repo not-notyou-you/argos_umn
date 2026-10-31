@@ -13,7 +13,10 @@
     "menu": "Menu",
     "close": "Tutup",
     "skip": "Lewati ke konten",
-    "language": "Bahasa"
+    "language": "Bahasa",
+    "loading": "Memuat",
+
+    "theme": "Ganti tema terang atau gelap"
   },
   "home": {
     "viewProjects": "Lihat Project",
@@ -106,6 +109,15 @@
     "count": "{n} orang"
   },
   "gallery": {
+    "year": "Tahun",
+    "month": "Bulan",
+    "allYears": "Semua tahun",
+    "allMonths": "Semua bulan",
+    "type": "Sumber",
+    "date": "Tanggal",
+    "description": "Keterangan",
+    "typeProject": "Project",
+    "typeActivity": "Aktivitas",
     "title": "The Galleries",
     "intro": "Foto dan video dari project dan aktivitas kami.",
     "all": "Semua",
@@ -159,6 +171,8 @@
     "changed": "Password berhasil diganti."
   },
   "common": {
+    "apply": "Terapkan",
+    "clear": "Hapus pencarian",
     "save": "Simpan",
     "saved": "Tersimpan.",
     "cancel": "Batal",
@@ -189,9 +203,14 @@
     "noData": "Belum ada data."
   },
   "errors": {
-    "forbiddenTitle": "Halaman ini khusus komite.",
-    "notFoundTitle": "Halaman tidak ditemukan.",
+    "forbiddenTitle": "Gerbang ini terkunci.",
+
+    "forbiddenBody": "Akun kamu tidak punya akses ke halaman ini. Kalau seharusnya bisa, hubungi komite.",
+    "notFoundTitle": "Kapal ini salah arah.",
+
+    "notFoundBody": "Halaman yang kamu cari tidak ada atau sudah dipindahkan.",
     "home": "Kembali ke beranda",
+    "seeProjects": "Lihat project",
     "errorTitle": "Terjadi kesalahan."
   },
   "me": {

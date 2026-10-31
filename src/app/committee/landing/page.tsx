@@ -25,7 +25,7 @@ export default async function LandingEditor() {
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6">
       <PageHeader title={t('landing')} />
-      <Card className="bg-white">
+      <Card className="bg-surface">
         <div className="flex flex-wrap items-center justify-between gap-3 pb-4">
           <h2 className="text-[22px] leading-[30px] font-semibold">{t('carousel')}</h2>
           <ImageUpload purpose="carousel" label={t('addSlide')} />
@@ -50,7 +50,7 @@ export default async function LandingEditor() {
           ))}
         </ul>
       </Card>
-      <Card className="bg-white">
+      <Card className="bg-surface">
         <h2 className="pb-4 text-[22px] leading-[30px] font-semibold">{t('aboutText')}</h2>
         <ActionForm action={updateAbout} submitLabel={c('save')}>
           <Field label={t('heroTitle')} htmlFor="heroTitle"><input id="heroTitle" name="heroTitle" required maxLength={120} defaultValue={about.heroTitle} className="input" /></Field>

@@ -28,15 +28,15 @@ async function PositionFields({ options, position, start, end }: { options: Opti
   const t = await getTranslations('committee');
   return (
     <div className="grid gap-3 sm:grid-cols-3">
-      <label className="flex flex-col gap-1 font-semibold text-ink">{t('position')}
+      <label className="flex flex-col gap-1 font-semibold text-heading">{t('position')}
         <select name="positionId" defaultValue={position} required className="input">
           {options.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
         </select>
       </label>
-      <label className="flex flex-col gap-1 font-semibold text-ink">{t('startMonth')}
+      <label className="flex flex-col gap-1 font-semibold text-heading">{t('startMonth')}
         <input type="month" name="start" defaultValue={start} required className="input" />
       </label>
-      <label className="flex flex-col gap-1 font-semibold text-ink">{t('endMonth')}
+      <label className="flex flex-col gap-1 font-semibold text-heading">{t('endMonth')}
         <input type="month" name="end" defaultValue={end} className="input" />
       </label>
     </div>
@@ -77,13 +77,13 @@ export default async function EditMember({ params, searchParams }: { params: Pro
 
       <nav className="flex flex-wrap gap-2">
         {tabs.map((item) => (
-          <Link key={item.value} href={`?tab=${item.value}`} aria-current={tab === item.value ? 'page' : undefined} className={`inline-flex min-h-11 items-center rounded-sm border px-3 font-semibold ${tab === item.value ? 'border-teal-text bg-teal-text text-white' : 'border-line bg-white'}`}>{item.label}</Link>
+          <Link key={item.value} href={`?tab=${item.value}`} aria-current={tab === item.value ? 'page' : undefined} className={`inline-flex min-h-11 items-center rounded-sm border px-3 font-semibold ${tab === item.value ? 'border-teal-text bg-teal-solid text-white' : 'border-line bg-surface'}`}>{item.label}</Link>
         ))}
       </nav>
 
       {tab === 'profile' && (
         <>
-          <Card className="bg-white">
+          <Card className="bg-surface">
             <div className="flex items-center gap-4 pb-4">
               <Avatar name={member.fullName} photoKey={photoKey} size={96} />
               <ImageUpload purpose="avatar" ownerType="member" ownerId={id} label={c('change')} />
@@ -94,8 +94,8 @@ export default async function EditMember({ params, searchParams }: { params: Pro
               <Field label={me('cohort')} htmlFor="cohort"><input id="cohort" name="cohort" type="number" min={2000} max={2100} defaultValue={member.cohort ?? ''} className="input" /></Field>
             </ActionForm>
           </Card>
-          <Card className="bg-white">
-            <h2 className="pb-2 font-semibold text-ink">{t('statusChange')}</h2>
+          <Card className="bg-surface">
+            <h2 className="pb-2 font-semibold text-heading">{t('statusChange')}</h2>
             <p className="pb-3">{t('offboardWarn')}</p>
             {member.status === 'onboarded' ? (
               <ActionButton action={setMemberStatus.bind(null, id, 'offboarded')} label={t('offboard')} variant="danger" confirmText={t('offboardWarn')} />
@@ -110,11 +110,11 @@ export default async function EditMember({ params, searchParams }: { params: Pro
       {tab === 'involvement' && <InvolvementTab memberId={id} />}
 
       {tab === 'account' && (
-        <Card className="flex flex-col gap-4 bg-white">
+        <Card className="flex flex-col gap-4 bg-surface">
           <dl className="grid gap-1 sm:grid-cols-[160px_1fr]">
-            <dt className="font-semibold text-ink">{t('username')}</dt><dd>{account.username}</dd>
-            <dt className="font-semibold text-ink">{c('status')}</dt><dd>{account.isActive ? t('accountActive') : t('accountInactive')}</dd>
-            <dt className="font-semibold text-ink">{t('lastLogin')}</dt>
+            <dt className="font-semibold text-heading">{t('username')}</dt><dd>{account.username}</dd>
+            <dt className="font-semibold text-heading">{c('status')}</dt><dd>{account.isActive ? t('accountActive') : t('accountInactive')}</dd>
+            <dt className="font-semibold text-heading">{t('lastLogin')}</dt>
             <dd>{account.lastLoginAt ? new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Jakarta' }).format(account.lastLoginAt) : t('never')}</dd>
           </dl>
           <div className="flex flex-wrap gap-3">
@@ -138,15 +138,15 @@ async function PositionsTab({ memberId }: { memberId: string }) {
     <>
       <Notice>{t('accessHelp')}</Notice>
       {entries.map((entry) => (
-        <Card key={entry.id} className="bg-white">
+        <Card key={entry.id} className="bg-surface">
           <ActionForm action={updateMemberPosition.bind(null, entry.id)} submitLabel={c('save')} variant="secondary">
             <PositionFields options={options} position={entry.positionId} start={entry.startDate.slice(0, 7)} end={entry.endDate?.slice(0, 7)} />
           </ActionForm>
           <div className="pt-2"><ActionButton action={deleteMemberPosition.bind(null, entry.id)} label={c('delete')} variant="danger" /></div>
         </Card>
       ))}
-      <Card className="bg-white">
-        <h2 className="pb-3 font-semibold text-ink">{t('addPosition')}</h2>
+      <Card className="bg-surface">
+        <h2 className="pb-3 font-semibold text-heading">{t('addPosition')}</h2>
         <ActionForm action={addMemberPosition.bind(null, memberId)} submitLabel={t('addPosition')} resetOnSuccess>
           <PositionFields options={options} />
         </ActionForm>
@@ -164,7 +164,7 @@ async function InvolvementTab({ memberId }: { memberId: string }) {
     memberInvolvement(memberId, { publishedOnly: false }),
   ]);
   return (
-    <Card className="bg-white">
+    <Card className="bg-surface">
       <ActionForm action={setMemberInvolvement.bind(null, memberId)} submitLabel={c('save')}>
         <CheckList name="projectIds" label={t('projects')} options={allProjects} selected={new Set(current.projects.map((p) => p.id))} />
         <CheckList name="activityIds" label={t('activities')} options={allActivities} selected={new Set(current.activities.map((a) => a.id))} />

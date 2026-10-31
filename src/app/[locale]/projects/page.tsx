@@ -1,6 +1,6 @@
 import { getLocale, getTranslations } from 'next-intl/server';
-import Link from 'next/link';
 import { ContentCard, StatusBadge } from '@/components/display';
+import { FilterBar, FilterTab, FilterTabs, SearchField } from '@/components/filter-bar';
 import { Container, EmptyState, PageHero } from '@/components/ui';
 import { listProjects } from '@/lib/queries';
 
@@ -13,42 +13,30 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
   const { status, q } = await searchParams;
   const t = await getTranslations('project');
   const s = await getTranslations('status');
-  const c = await getTranslations('common');
   const locale = await getLocale();
   const prefix = locale === 'id' ? '' : `/${locale}`;
   const active = FILTERS.includes(status as Filter) ? (status as Filter) : undefined;
   const rows = await listProjects({ status: active, q: q?.slice(0, 80) });
 
   const tab = (value: Filter | undefined, label: string) => (
-    <Link
-      key={label}
-      href={{ pathname: `${prefix}/projects`, query: { ...(value ? { status: value } : {}), ...(q ? { q } : {}) } }}
-      aria-current={active === value ? 'page' : undefined}
-      className={`inline-flex min-h-11 items-center rounded-sm border px-3 font-semibold ${active === value ? 'border-teal-text bg-teal-text text-white' : 'border-line hover:border-teal-text'}`}
-    >
-      {label}
-    </Link>
+    <FilterTab key={label} href={{ pathname: `${prefix}/projects`, query: { ...(value ? { status: value } : {}), ...(q ? { q } : {}) } }} active={active === value}>{label}</FilterTab>
   );
 
   return (
     <>
-    <PageHero title={t('title')} intro={t('intro')} meta={t('count', { n: rows.length })} />
+    <PageHero title={t('title')} intro={t('intro')} />
     <Container className="py-12">
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-6">
-        <div className="flex flex-wrap gap-2">
+      <FilterBar>
+        <FilterTabs>
           {tab(undefined, t('all'))}
           {FILTERS.map((f) => tab(f, s(f)))}
-        </div>
-        <form role="search" className="flex gap-2">
-          {active && <input type="hidden" name="status" value={active} />}
-          <input name="q" defaultValue={q} aria-label={t('search')} placeholder={t('search')} className="input max-w-56" />
-          <button className="sr-only">{c('search')}</button>
-        </form>
-      </div>
+        </FilterTabs>
+        <SearchField label={t('search')} value={q} hidden={{ status: active }} clearHref={{ pathname: `${prefix}/projects`, query: active ? { status: active } : {} }} />
+      </FilterBar>
       {rows.length === 0 ? (
         <EmptyState message={t('empty')} />
       ) : (
-        <div className="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="reveal-items grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
           {rows.map(({ project, coverKey, logoKey }) => (
             <ContentCard key={project.id} href={`${prefix}/projects/${project.slug}`} name={project.name} description={project.description} coverKey={coverKey} logoKey={logoKey} meta={<StatusBadge status={project.status} />} />
           ))}

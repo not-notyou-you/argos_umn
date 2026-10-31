@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
 import localFont from 'next/font/local';
 import { NextIntlClientProvider } from 'next-intl';
 import { getLocale } from 'next-intl/server';
@@ -25,8 +26,11 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const locale = await getLocale();
+  // Tanpa cookie, tema mengikuti sistem lewat CSS. Dibaca di server karena CSP melarang skrip inline.
+  const saved = (await cookies()).get('theme')?.value;
+  const theme = saved === 'light' || saved === 'dark' ? saved : undefined;
   return (
-    <html lang={locale} className={montserrat.variable}>
+    <html lang={locale} data-theme={theme} className={montserrat.variable}>
       <body className="min-h-screen antialiased">
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>

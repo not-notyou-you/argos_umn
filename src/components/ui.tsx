@@ -5,11 +5,11 @@ const buttonBase =
   'inline-flex min-h-11 items-center justify-center gap-2 rounded-sm px-4 py-2 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
 
 const variants = {
-  primary: 'bg-teal-text text-white hover:bg-[#265a65]',
+  primary: 'bg-teal-solid text-white hover:bg-teal-solid-hover',
   accent: 'bg-brand-orange text-ink hover:bg-[#f9a56d]',
   secondary: 'border border-teal-text text-teal-text hover:bg-surface-muted',
   ghost: 'border border-white/50 text-white hover:bg-white hover:text-ink',
-  danger: 'bg-danger text-white hover:bg-[#8f1e18]',
+  danger: 'bg-danger-solid text-white hover:bg-danger-solid-hover',
 };
 
 export type ButtonVariant = keyof typeof variants;
@@ -40,27 +40,35 @@ export function PageHeader({ title, intro, action }: { title: string; intro?: st
   );
 }
 
-export function PageHero({ title, intro, meta }: { title: string; intro?: string; meta?: string }) {
+export function PageHero({ title, intro }: { title: string; intro?: string }) {
   return (
-    <section className="on-dark slash-bg bg-ink pt-16 pb-14 md:pt-24 md:pb-20">
+    <section className="on-dark slash-move bg-ink pt-16 pb-14 md:pt-24 md:pb-20">
       <Container>
-        {meta && <p className="flex items-center gap-3 text-sm font-semibold text-brand-light-blue"><span className="slash" aria-hidden /> {meta}</p>}
-        <h1 className="rise display mt-4 text-white">{title}</h1>
+        <h1 className="rise display text-white">{title}</h1>
         {intro && <p className="rise mt-4 max-w-[52ch] text-lg leading-8 text-[#d3d6da]" style={{ animationDelay: '120ms' }}>{intro}</p>}
       </Container>
     </section>
   );
 }
 
-export function SectionLabel({ children }: { children: ReactNode }) {
-  return <p className="label flex items-center gap-3 text-orange-text"><span className="slash" aria-hidden />{children}</p>;
+export function ArgosLogo({ width, className = '' }: { width: number; className?: string }) {
+  return (
+    <>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/brand/argos-logo.png" alt="Argos Clubs" width={width} className={`theme-light-only ${className}`} />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/brand/argos-logo-white.png" alt="Argos Clubs" width={width} className={`theme-dark-only ${className}`} />
+    </>
+  );
 }
 
 export function EmptyState({ message, action }: { message: string; action?: ReactNode }) {
   return (
     <div className="flex flex-col items-center gap-4 rounded-md border border-dashed border-brand-light-gray p-12 text-center">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/brand/argos-helmet.png" alt="" width={48} height={48} className="opacity-60" />
+      <img src="/brand/argos-helmet.png" alt="" width={48} height={48} className="theme-light-only opacity-60" />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/brand/argos-helmet-white.png" alt="" width={48} height={48} className="theme-dark-only opacity-60" />
       <p>{message}</p>
       {action}
     </div>
@@ -70,7 +78,7 @@ export function EmptyState({ message, action }: { message: string; action?: Reac
 export function Field({ label, htmlFor, hint, error, children }: { label: string; htmlFor: string; hint?: string; error?: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-1">
-      <label htmlFor={htmlFor} className="font-semibold text-ink">{label}</label>
+      <label htmlFor={htmlFor} className="font-semibold text-heading">{label}</label>
       {children}
       {hint && <p className="text-sm leading-[22px]">{hint}</p>}
       {error && <p className="text-sm leading-[22px] text-danger">{error}</p>}
@@ -80,8 +88,8 @@ export function Field({ label, htmlFor, hint, error, children }: { label: string
 
 export function Notice({ tone = 'info', children }: { tone?: 'info' | 'error' | 'success'; children: ReactNode }) {
   const tones = {
-    info: 'border-brand-dark-blue bg-surface-muted text-ink',
-    error: 'border-danger bg-[#fdecea] text-danger',
+    info: 'border-brand-dark-blue bg-surface-muted text-heading',
+    error: 'border-danger bg-danger-soft text-danger',
     success: 'border-teal-text bg-surface-muted text-teal-text',
   };
   return <p role="status" aria-live="polite" className={`rounded-sm border-l-4 p-3 ${tones[tone]}`}>{children}</p>;

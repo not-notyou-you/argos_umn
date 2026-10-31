@@ -26,7 +26,7 @@ export function ProjectFields({ project }: { project: Project }) {
       <Field label={c('name')} htmlFor="name"><input id="name" name="name" required maxLength={120} defaultValue={project.name} className="input" /></Field>
       <Field label={c('description')} htmlFor="description"><textarea id="description" name="description" rows={7} maxLength={10000} defaultValue={project.description} className="input" /></Field>
       <fieldset className="flex flex-col gap-3">
-        <legend className="font-semibold text-ink">{e('buttons')}</legend>
+        <legend className="font-semibold text-heading">{e('buttons')}</legend>
         {buttons.map((b) => (
           <div key={b.key} className="grid items-center gap-2 sm:grid-cols-[190px_120px_1fr]">
             <span>{b.label}</span>

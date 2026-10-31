@@ -28,8 +28,8 @@ export default async function CommitteeDashboard() {
       <ul className="grid gap-4 sm:grid-cols-3">
         {tiles.map((tile) => (
           <li key={tile.href}>
-            <Link href={tile.href} className="block rounded-md border border-line bg-white p-4 hover:border-teal-text">
-              <span className="block text-[30px] leading-[38px] font-bold text-ink">{tile.value}</span>
+            <Link href={tile.href} className="block rounded-md border border-line bg-surface p-4 hover:border-teal-text">
+              <span className="block text-[30px] leading-[38px] font-bold text-heading">{tile.value}</span>
               {tile.label}
             </Link>
           </li>

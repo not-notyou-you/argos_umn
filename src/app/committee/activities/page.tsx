@@ -20,7 +20,7 @@ export default async function CommitteeActivities() {
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-6">
       <PageHeader title={t('activities')} />
-      <Card className="bg-white">
+      <Card className="bg-surface">
         <ActionForm action={createActivity} submitLabel={t('createDraft')} className="flex flex-wrap items-end gap-3">
           <div className="min-w-60 flex-1"><Field label={t('newActivity')} htmlFor="name"><input id="name" name="name" required maxLength={120} className="input" /></Field></div>
           <div><Field label={t('activityDate')} htmlFor="activityDate"><input id="activityDate" name="activityDate" type="date" required className="input" /></Field></div>
@@ -29,8 +29,8 @@ export default async function CommitteeActivities() {
       <ul className="flex flex-col gap-2">
         {rows.map((activity) => (
           <li key={activity.id}>
-            <Link href={`/committee/activities/${activity.id}`} className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-line bg-white p-3 hover:border-teal-text">
-              <span className="font-semibold text-ink">{activity.name}</span>
+            <Link href={`/committee/activities/${activity.id}`} className="flex flex-wrap items-center justify-between gap-2 rounded-md border border-line bg-surface p-3 hover:border-teal-text">
+              <span className="font-semibold text-heading">{activity.name}</span>
               <span className="text-sm">{formatDate(activity.activityDate, locale)} · {activity.isPublished ? c('published') : c('draft')}</span>
             </Link>
           </li>

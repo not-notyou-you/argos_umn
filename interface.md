@@ -14,7 +14,7 @@ Bahasa visualnya berasal dari logo helmet:
 - **Geometri heksagon**, dari badan helmet, untuk avatar member.
 - **Satu titik oranye**, dari visor, untuk elemen terpenting di setiap layar.
 
-Website memakai tema terang, dengan section gelap untuk hero dan footer. Mode gelap di luar cakupan v1.
+Website punya tema terang dan gelap. Tanpa pilihan pengguna, tema mengikuti sistem; pilihan disimpan di cookie `theme` dan dibaca server karena CSP melarang skrip inline. Hero, header, dan footer selalu gelap (`--ink`), sedangkan warna judul mengikuti tema lewat `--heading`. Saat memuat, halaman memakai `PageLoader` dan media memakai kelas `media-loading`: helmet idle dengan bilah berdenyut berurutan.
 
 ## 2. Design tokens
 

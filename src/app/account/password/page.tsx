@@ -11,7 +11,7 @@ export default async function PasswordPage() {
   const t = await getTranslations('auth');
   return (
     <main className="flex min-h-screen items-center justify-center bg-surface-muted p-4">
-      <div className="flex w-full max-w-sm flex-col gap-4 rounded-md border border-line bg-white p-6">
+      <div className="flex w-full max-w-sm flex-col gap-4 rounded-md border border-line bg-surface p-6">
         <div>
           <h1 className="text-xl leading-7 font-semibold">{t('changeTitle')}</h1>
           <p>{t('changeIntro')}</p>

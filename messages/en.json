@@ -13,7 +13,10 @@
     "menu": "Menu",
     "close": "Close",
     "skip": "Skip to content",
-    "language": "Language"
+    "language": "Language",
+    "loading": "Loading",
+
+    "theme": "Switch between light and dark theme"
   },
   "home": {
     "viewProjects": "View Projects",
@@ -106,6 +109,15 @@
     "count": "{n} people"
   },
   "gallery": {
+    "year": "Year",
+    "month": "Month",
+    "allYears": "All years",
+    "allMonths": "All months",
+    "type": "Source",
+    "date": "Date",
+    "description": "Description",
+    "typeProject": "Project",
+    "typeActivity": "Activity",
     "title": "The Galleries",
     "intro": "Photos and videos from our projects and activities.",
     "all": "All",
@@ -159,6 +171,8 @@
     "changed": "Password changed."
   },
   "common": {
+    "apply": "Apply",
+    "clear": "Clear search",
     "save": "Save",
     "saved": "Saved.",
     "cancel": "Cancel",
@@ -189,9 +203,14 @@
     "noData": "No data yet."
   },
   "errors": {
-    "forbiddenTitle": "This page is for the committee only.",
-    "notFoundTitle": "Page not found.",
+    "forbiddenTitle": "This gate is locked.",
+
+    "forbiddenBody": "Your account doesn't have access to this page. If it should, contact the committee.",
+    "notFoundTitle": "This ship is off course.",
+
+    "notFoundBody": "The page you're looking for doesn't exist or has moved.",
     "home": "Back to home",
+    "seeProjects": "See projects",
     "errorTitle": "Something went wrong."
   },
   "me": {

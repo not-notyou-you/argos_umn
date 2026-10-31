@@ -31,7 +31,7 @@ export function Carousel({ slides, children, fallback }: { slides: Slide[]; chil
     <section className="on-dark relative isolate grid min-h-[calc(100svh-72px)] overflow-hidden bg-ink lg:grid-cols-[1.08fr_1fr]">
       <div className="relative z-10 flex items-center">{children}</div>
       <div
-        className="hero-panel panel-open relative min-h-[46svh] overflow-hidden bg-ink-soft lg:-ml-[9vw] lg:min-h-0"
+        className="media-loading hero-panel panel-open relative min-h-[46svh] overflow-hidden lg:-ml-[9vw] lg:min-h-0"
         onMouseEnter={() => setHovering(true)}
         onMouseLeave={() => setHovering(false)}
         onFocusCapture={() => setHovering(true)}

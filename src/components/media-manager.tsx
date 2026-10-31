@@ -163,7 +163,7 @@ export function MediaManager({ owner, items }: { owner: Owner; items: Item[] }) 
                   order(ids);
                   setDrag(null);
                 }}
-                className="overflow-hidden rounded-md border border-line bg-white"
+                className="overflow-hidden rounded-md border border-line bg-surface"
               >
                 <div className="relative">
                   <img src={imageUrl(photo.storageKey!, 480)} alt={photo.altText ?? ''} className="aspect-[16/10] w-full object-cover" />
@@ -195,7 +195,7 @@ export function MediaManager({ owner, items }: { owner: Owner; items: Item[] }) 
       <div>
         <h3 className="font-semibold">{t('video')} {video ? 1 : 0}/1</h3>
         {video ? (
-          <div className="mt-2 flex items-center justify-between gap-2 rounded-md border border-line bg-white p-2">
+          <div className="mt-2 flex items-center justify-between gap-2 rounded-md border border-line bg-surface p-2">
             <span className="flex items-center gap-2"><Film size={18} aria-hidden /> {video.source}{video.externalId ? `: ${video.externalId}` : ''}</span>
             <button type="button" aria-label={c('delete')} onClick={() => run(() => deleteMedia(owner, video.id))} className="flex size-11 cursor-pointer items-center justify-center text-danger"><Trash2 size={18} /></button>
           </div>

@@ -9,9 +9,15 @@
   --color-ink: #1c1f24;
   --color-surface: #ffffff;
   --color-surface-muted: #f6f8f9;
+  --color-heading: #1c1f24;
   --color-teal-text: #2f6d7a;
+  --color-teal-solid: #2f6d7a;
+  --color-teal-solid-hover: #265a65;
   --color-orange-text: #a84e17;
   --color-danger: #b3261e;
+  --color-danger-solid: #b3261e;
+  --color-danger-solid-hover: #8f1e18;
+  --color-danger-soft: #fdecea;
   --color-line: #dfe3e6;
   --color-ink-soft: #262a30;
 
@@ -22,12 +28,52 @@
   --radius-md: 8px;
 }
 
+:root { color-scheme: light; }
+
+/* Warna yang selalu gelap (--color-ink) sengaja tidak berubah. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-surface: #121417;
+  --color-surface-muted: #1a1d22;
+  --color-heading: #f2f4f5;
+  --color-brand-dark-gray: #c4c8ce;
+  --color-teal-text: #7cc4d3;
+  --color-orange-text: #f79552;
+  --color-danger: #ffb4ab;
+  --color-danger-soft: #3b1a18;
+  --color-line: #30353c;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --color-surface: #121417;
+    --color-surface-muted: #1a1d22;
+    --color-heading: #f2f4f5;
+    --color-brand-dark-gray: #c4c8ce;
+    --color-teal-text: #7cc4d3;
+    --color-orange-text: #f79552;
+    --color-danger: #ffb4ab;
+    --color-danger-soft: #3b1a18;
+    --color-line: #30353c;
+  }
+
+  :root:not([data-theme='light']) .theme-light-only { display: none; }
+  :root:not([data-theme='light']) .theme-dark-only { display: revert; }
+}
+
+.theme-dark-only { display: none; }
+:root[data-theme='dark'] .theme-light-only { display: none; }
+:root[data-theme='dark'] .theme-dark-only { display: revert; }
+:root[data-theme='light'] .theme-dark-only { display: none; }
+
 @layer base {
   html {
     scroll-behavior: smooth;
   }
 
   body {
+    transition: background-color 0.3s, color 0.3s;
     background: var(--color-surface);
     color: var(--color-brand-dark-gray);
     font-family: var(--font-sans);
@@ -36,7 +82,7 @@
   }
 
   h1, h2, h3, h4 {
-    color: var(--color-ink);
+    color: var(--color-heading);
     text-wrap: balance;
     letter-spacing: -0.02em;
   }
@@ -70,6 +116,26 @@
     rgb(102 181 197 / 0.12) 0 28px,
     transparent 28px 84px
   );
+}
+
+/* Satu periode pola = 84px, jadi perulangannya tidak terlihat melompat. */
+@property --slash-shift {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes slash-move {
+  to { --slash-shift: 84px; }
+}
+
+.slash-move {
+  background-image: repeating-linear-gradient(
+    115deg,
+    rgb(102 181 197 / 0.12) var(--slash-shift) calc(var(--slash-shift) + 28px),
+    transparent calc(var(--slash-shift) + 28px) calc(var(--slash-shift) + 84px)
+  );
+  animation: slash-move 6s linear infinite;
 }
 
 .display {
@@ -189,15 +255,122 @@
   }
 }
 
-/* Muncul saat masuk layar. Browser tanpa dukungan tetap menampilkan konten. */
+@keyframes rise-left {
+  from { opacity: 0; transform: translateX(-48px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes rise-right {
+  from { opacity: 0; transform: translateX(48px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes rise-scale {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(-14deg); }
+  to { transform: rotate(14deg); }
+}
+
+/* Mengikuti posisi scroll. Browser tanpa dukungan tetap menampilkan konten.
+   view() memakai scroll container terdekat, jadi ancestor tidak boleh overflow-hidden. */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
-    .reveal {
+    .reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-items > * {
       animation: rise linear both;
       animation-timeline: view();
       animation-range: entry 0% entry 42%;
     }
+
+    .reveal-left { animation-name: rise-left; }
+    .reveal-right { animation-name: rise-right; }
+    .reveal-scale { animation-name: rise-scale; }
+    .reveal-items > :nth-child(3n + 2) { animation-range: entry 6% entry 48%; }
+    .reveal-items > :nth-child(3n) { animation-range: entry 12% entry 54%; }
+
+    .spin-scroll {
+      animation: spin-slow linear both;
+      animation-timeline: view();
+    }
   }
+}
+
+/* Helmet idle di belakang media; tertutup sendiri saat foto atau video tampil. */
+.media-loading {
+  background: var(--color-surface-muted) url('/brand/helmet-loading.svg') center / min(72px, 45%) no-repeat;
+}
+
+@keyframes helmet-idle {
+  0%, 100% { opacity: 0.18; }
+  40% { opacity: 1; }
+}
+
+.helmet-idle polygon {
+  animation: helmet-idle 1.6s ease-in-out infinite;
+}
+
+.error-code {
+  font-size: clamp(7rem, 24vw, 17rem);
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+@keyframes helmet-float {
+  0%, 100% { transform: translateY(-2%) rotate(-3deg); }
+  50% { transform: translateY(3%) rotate(3deg); }
+}
+
+.helmet-float {
+  animation: helmet-float 5s ease-in-out infinite;
+}
+
+.search-field input:focus-visible,
+.search-field select:focus-visible {
+  outline: none;
+}
+
+.search-field input::-webkit-search-cancel-button {
+  display: none;
+}
+
+/* Bingkai mengikuti potongan sudut .cut-corner. 30px = 28px + 4px x tan(22,5 derajat). */
+.member-frame {
+  opacity: 0;
+  transition: opacity 0.25s;
+  clip-path: polygon(evenodd,
+    0 0, 100% 0, 100% calc(100% - 28px), calc(100% - 28px) 100%, 0 100%, 0 0,
+    4px 4px, 4px calc(100% - 4px), calc(100% - 30px) calc(100% - 4px), calc(100% - 4px) calc(100% - 30px), calc(100% - 4px) 4px, 4px 4px);
+}
+
+.group:hover .member-frame,
+.group:focus-visible .member-frame {
+  opacity: 1;
+}
+
+.member-card:focus-visible {
+  outline-offset: -4px;
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+.gallery-modal[open] {
+  animation: modal-in 0.35s var(--ease-out-expo) both;
+}
+
+@keyframes menu-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+.filter-menu {
+  animation: menu-in 0.18s var(--ease-out-expo) both;
 }
 
 .zoom-img {

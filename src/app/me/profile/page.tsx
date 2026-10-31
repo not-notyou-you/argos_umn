@@ -56,7 +56,7 @@ export default async function MyProfilePage() {
               <Field label={t('cohort')} htmlFor="cohort"><input id="cohort" name="cohort" type="number" min={2000} max={2100} defaultValue={member.cohort ?? ''} className="input" /></Field>
             </div>
             <fieldset>
-              <legend className="font-semibold text-ink">{t('visibility')}</legend>
+              <legend className="font-semibold text-heading">{t('visibility')}</legend>
               <p className="flex min-h-11 items-center justify-between">{t('name')} <span className="text-sm">{t('always')}</span></p>
               {flags.map((flag) => (
                 <label key={flag} className="flex min-h-11 items-center justify-between gap-2">
@@ -107,7 +107,7 @@ export default async function MyProfilePage() {
             <ul className="mt-2 flex flex-col gap-1">
               {requests.map(({ request, projectName, activityName }) => (
                 <li key={request.id} className="flex flex-wrap justify-between gap-2 border-b border-line py-2">
-                  <span className="text-ink">{projectName ?? activityName}</span>
+                  <span className="text-heading">{projectName ?? activityName}</span>
                   <span>{t(request.status)}{request.decisionNote ? `: "${request.decisionNote}"` : ''}</span>
                 </li>
               ))}

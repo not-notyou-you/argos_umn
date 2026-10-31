@@ -191,10 +191,15 @@ export async function memberInvolvement(memberId: string, { publishedOnly = true
   return { projects: projectRows, activities: activityRows };
 }
 
-export async function galleryItems(filter: 'all' | 'project' | 'activity', limit: number) {
+// Tanggal kejadian: tanggal aktivitas, atau tanggal upload untuk media project.
+const galleryDate = sql<string>`coalesce(${activities.activityDate}, (${media.createdAt} at time zone 'Asia/Jakarta')::date)`;
+const galleryPublished = or(eq(projects.isPublished, true), eq(activities.isPublished, true));
+
+export async function galleryItems(filter: 'all' | 'project' | 'activity', limit: number, period: { year?: number; month?: number } = {}) {
   const rows = await db
     .select({
       media,
+      date: sql<string>`to_char(${galleryDate}, 'YYYY-MM-DD')`,
       projectName: projects.name,
       projectSlug: projects.slug,
       activityName: activities.name,
@@ -210,12 +215,28 @@ export async function galleryItems(filter: 'all' | 'project' | 'activity', limit
           ? eq(projects.isPublished, true)
           : filter === 'activity'
             ? eq(activities.isPublished, true)
-            : or(eq(projects.isPublished, true), eq(activities.isPublished, true)),
+            : galleryPublished,
+        period.year ? sql`extract(year from ${galleryDate}) = ${period.year}` : undefined,
+        period.month ? sql`extract(month from ${galleryDate}) = ${period.month}` : undefined,
       ),
     )
-    .orderBy(desc(media.createdAt), asc(media.sortOrder))
+    .orderBy(desc(galleryDate), asc(media.sortOrder))
     .limit(limit + 1);
   return { items: rows.slice(0, limit), hasMore: rows.length > limit };
+}
+
+/** Pasangan tahun dan bulan yang punya media, untuk mengisi filter. */
+export async function galleryPeriods() {
+  const rows = await db
+    .selectDistinct({
+      year: sql<number>`extract(year from ${galleryDate})::int`,
+      month: sql<number>`extract(month from ${galleryDate})::int`,
+    })
+    .from(media)
+    .leftJoin(projects, eq(projects.id, media.projectId))
+    .leftJoin(activities, eq(activities.id, media.activityId))
+    .where(and(eq(media.purpose, 'gallery'), galleryPublished));
+  return rows;
 }
 
 export async function homeStats() {

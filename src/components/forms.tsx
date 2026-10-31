@@ -59,9 +59,9 @@ export function TemporaryPassword({ value }: { value: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <div className="rounded-sm border-l-4 border-brand-orange bg-surface-muted p-3">
-      <p className="font-semibold text-ink">{t('tempTitle')}</p>
+      <p className="font-semibold text-heading">{t('tempTitle')}</p>
       <div className="mt-1 flex flex-wrap items-center gap-2">
-        <code data-testid="temp-password" className="rounded-sm bg-white px-2 py-1 text-ink">{value}</code>
+        <code data-testid="temp-password" className="rounded-sm bg-surface px-2 py-1 text-heading">{value}</code>
         <button
           type="button"
           className="min-h-11 cursor-pointer font-semibold text-teal-text"
@@ -223,7 +223,7 @@ export function CheckList({ name, options, selected, label }: { name: string; op
   const needle = q.toLowerCase();
   return (
     <fieldset className="flex flex-col gap-2">
-      <legend className="font-semibold text-ink">{label}</legend>
+      <legend className="font-semibold text-heading">{label}</legend>
       {options.length > 8 && <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={c('search')} aria-label={c('search')} className="input" />}
       {options.length === 0 && <p>{c('noData')}</p>}
       <div className="grid max-h-64 gap-x-4 overflow-y-auto sm:grid-cols-2">

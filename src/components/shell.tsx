@@ -7,6 +7,7 @@ import { Helmet } from './helmet';
 import { LanguageSwitch } from './language-switch';
 import { MobileNav } from './mobile-nav';
 import { NavLinks } from './nav-links';
+import { ThemeToggle } from './theme-toggle';
 import { Container, buttonClass } from './ui';
 
 export async function getPublicNav() {
@@ -41,11 +42,14 @@ export async function Header() {
           <span>Argos Club @ UMN</span>
         </Link>
         <NavLinks items={items} label={t('menu')} />
-        <div className="hidden items-center gap-3 lg:flex">
-          <LanguageSwitch dark />
-          <Link href={accountHref} className={buttonClass('ghost')}>{accountLabel}</Link>
+        <div className="flex items-center gap-1 lg:gap-3">
+          <ThemeToggle />
+          <div className="hidden items-center gap-3 lg:flex">
+            <LanguageSwitch dark />
+            <Link href={accountHref} className={buttonClass('ghost')}>{accountLabel}</Link>
+          </div>
+          <MobileNav items={[...items, { href: accountHref, label: accountLabel }]} />
         </div>
-        <MobileNav items={[...items, { href: accountHref, label: accountLabel }]} />
       </Container>
     </header>
   );
@@ -104,7 +108,10 @@ export async function PanelShell({ title, items, children }: { title: string; it
         </nav>
         <div className="mt-4 flex items-center justify-between gap-2 border-t border-white/20 pt-3">
           <span className="truncate text-sm">{user?.username}</span>
-          <LanguageSwitch dark />
+          <div className="flex items-center">
+            <ThemeToggle />
+            <LanguageSwitch dark />
+          </div>
         </div>
         <form action={logoutAction}>
           <button className="mt-2 min-h-11 w-full cursor-pointer rounded-sm border border-white/30 px-3 hover:bg-white/10">{t('logout')}</button>
