@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { embedUrl } from '@/lib/media-url';
-import { parseDriveId, parseYouTubeId, safeHttpUrl, slugify } from '@/lib/util';
+import { parseDriveId, parseYouTubeId, safeHttpUrl, safeLocalPath, slugify } from '@/lib/util';
 
 describe('parseYouTubeId', () => {
   it.each([
@@ -36,6 +36,15 @@ describe('safeHttpUrl', () => {
     expect(safeHttpUrl('https://example.com')).toBe('https://example.com/');
     expect(safeHttpUrl('javascript:alert(1)')).toBeNull();
     expect(safeHttpUrl('data:text/html,x')).toBeNull();
+  });
+});
+
+describe('safeLocalPath', () => {
+  it('menerima path lokal', () => {
+    expect(safeLocalPath('/en/projects?status=done')).toBe('/en/projects?status=done');
+  });
+  it.each(['//evil.example', '/\\evil.example', '/\t/evil.example', '/a\\b', 'https://evil.example', 'evil'])('menolak %j', (path) => {
+    expect(safeLocalPath(path)).toBe('/');
   });
 });
 

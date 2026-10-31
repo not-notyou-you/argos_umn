@@ -11,6 +11,7 @@ services:
     depends_on:
       db: { condition: service_healthy }
     environment: *app-env
+    networks: [edge, internal]
     volumes:
       - media:/data/media
     healthcheck:
@@ -27,6 +28,7 @@ services:
       POSTGRES_DB: argos_umn
       POSTGRES_USER: argos
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD wajib diisi}
+    networks: [internal]
     volumes:
       - pgdata:/var/lib/postgresql
     healthcheck:
@@ -41,6 +43,8 @@ services:
     command: tunnel --no-autoupdate --protocol quic run
     environment:
       TUNNEL_TOKEN: ${TUNNEL_TOKEN:?TUNNEL_TOKEN wajib diisi}
+    # Hanya bisa menjangkau app, tidak bisa menjangkau database.
+    networks: [edge]
     depends_on:
       app: { condition: service_healthy }
 
@@ -49,18 +53,21 @@ services:
     restart: unless-stopped
     environment:
       PGPASSWORD: ${POSTGRES_PASSWORD}
+      BACKUP_PASSPHRASE: ${BACKUP_PASSPHRASE:?BACKUP_PASSPHRASE wajib diisi}
     entrypoint: ['/bin/sh', '/scripts/backup-loop.sh']
+    networks: [internal, edge]
     depends_on:
       db: { condition: service_healthy }
     volumes:
       - ./scripts:/scripts:ro
       - ./backups:/backups
-      - media:/data/media:ro
+      - media:/data/media
 
   # Perintah sekali jalan: docker compose run --rm tools npm run db:migrate
   tools:
     build: { context: ., target: build }
     profiles: [tools]
+    networks: [internal, edge]
     environment:
       <<: *app-env
       SEED_PRESIDENT_PASSWORD: ${SEED_PRESIDENT_PASSWORD:-}
@@ -71,6 +78,11 @@ services:
       db: { condition: service_healthy }
     volumes:
       - media:/data/media
+
+networks:
+  edge:
+  internal:
+    internal: true
 
 volumes:
   pgdata:

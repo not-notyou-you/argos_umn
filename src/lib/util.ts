@@ -20,6 +20,12 @@ export function safeHttpUrl(value: string): string | null {
   }
 }
 
+/** Hanya menerima path di situs ini; `//host` dan `/\\host` dibaca browser sebagai situs lain. */
+export function safeLocalPath(value: string): string {
+  if (!/^\/(?![/\\])/.test(value) || /[\\\u0000-\u001f]/.test(value)) return '/';
+  return value;
+}
+
 export function excerpt(text: string, length = 140) {
   const flat = text.replace(/\s+/g, ' ').trim();
   return flat.length > length ? `${flat.slice(0, length).trimEnd()}…` : flat;

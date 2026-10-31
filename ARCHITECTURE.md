@@ -186,7 +186,7 @@ Join table `project_members` dan `activity_members` memakai primary key gabungan
 
 - **Sesi:** token acak 256-bit, hanya hash yang disimpan. Cookie `HttpOnly`, `Secure`, `SameSite=Lax`, masa aktif 7 hari bergulir; panel komite tidak butuh sesi terpisah.
 - **Offboarding:** dalam satu transaksi, status diubah dan semua baris `sessions` milik akun dihapus. Setiap request juga memeriksa status member sebagai pengaman kedua.
-- **Batas login:** 5 kali gagal per username per 15 menit, ditambah batas per IP.
+- **Batas login (15 menit):** 5 gagal per pasangan username + IP, 20 per username, dan 30 per IP. Pasangan username + IP mencegah penyerang mengunci akun orang lain. IP dibaca dari `CF-Connecting-IP`.
 - **Password:** minimal 12 karakter, dicek terhadap daftar password umum.
 - **Password sementara:** dibuat acak dan hanya ditampilkan sekali.
 - **Pemulihan seeder:** perintah `npm run account:reset -- <username>` dari layanan `tools`.
@@ -209,7 +209,7 @@ Skema Zod member untuk edit project **tidak memuat** `status`, `is_published`, a
 
 | Jenis | Format | Batas | Proses |
 |---|---|---|---|
-| Foto | JPEG, PNG, WebP | 10 MB | Cek magic bytes, hapus EXIF, buat WebP 480/960/1600 px |
+| Foto | JPEG, PNG, WebP | 10 MB, 40 megapiksel | Cek magic bytes, hapus EXIF, buat WebP 480/960/1600 px |
 | Logo | PNG, WebP | 2 MB | Sama, tanpa SVG untuk mencegah XSS |
 | Video upload | MP4 (H.264/AAC), WebM | 95 MB | Dilayani dengan HTTP Range |
 | YouTube | URL `youtube.com`, `youtu.be` | — | Simpan ID, embed `youtube-nocookie.com` setelah diklik |
@@ -228,12 +228,24 @@ Video lebih dari 95 MB dianjurkan memakai YouTube.
 ## 7. Keamanan
 
 - Semua perubahan divalidasi di server dengan Zod.
-- CSP dengan `frame-src` hanya `youtube-nocookie.com` dan `drive.google.com`. `script-src` masih memuat `'unsafe-inline'` karena inline script Next.js; nonce bisa ditambahkan jika nanti dibutuhkan.
+- `/api/upload` menolak origin lain, karena route handler tidak mendapat pemeriksaan origin bawaan Server Action.
+- CSP dibuat di `src/proxy.ts` dengan nonce baru pada setiap request, tanpa `unsafe-inline` pada `script-src`. `frame-src` hanya `youtube-nocookie.com` dan `drive.google.com`.
+- HSTS dikirim saat `PUBLIC_BASE_URL` memakai HTTPS.
 - Deskripsi disimpan sebagai teks/Markdown terbatas dan disanitasi saat render.
 - URL tombol project hanya menerima `http` dan `https`.
-- Kontainer `db` tidak punya port ke host.
+- Kontainer `db` tidak punya port ke host dan berada di jaringan `internal`, sehingga `cloudflared` tidak bisa menjangkaunya.
 - Rahasia hanya ada di `.env` server, tidak pernah masuk repo.
 - Jika repo dipublikasikan, pastikan tidak ada data member atau kredensial di dalamnya.
+- Regresi pen test ada di `tests/e2e/security.spec.ts`.
+
+### Risiko yang diterima
+
+| Risiko | Alasan | Pengendali |
+|---|---|---|
+| Sesama komite bisa saling mengubah posisi dan me-reset password | Kebutuhan peran komite | Audit log, seeder hanya bisa di-reset seeder |
+| Tanpa 2FA | Klub tidak punya layanan email; dipertimbangkan setelah rilis | Password panjang, batas login |
+| Serangan dari banyak IP bisa memicu batas 20 per username | Batas keras itu yang menahan brute force terdistribusi | Berakhir sendiri setelah 15 menit |
+| Backup terenkripsi masih di server yang sama | Lokasi tujuan belum ditentukan | Wajib disalin ke luar server sebelum rilis |
 
 ## 8. Deployment
 
@@ -253,7 +265,7 @@ Perkiraan awal spesifikasi: 2 vCPU, 4 GB RAM, dan 100 GB disk, diutamakan pada V
 
 ### Backup
 
-- `pg_dump` dan `rsync` media setiap malam.
+- `pg_dump` dan arsip media setiap hari, dienkripsi AES-256 dengan `BACKUP_PASSPHRASE`.
 - Simpan 7 harian dan 4 mingguan.
 - Salinan terenkripsi harus berada **di luar server utama**, karena satu disk bukan backup.
 - Lakukan uji restore sebelum rilis dan setiap awal semester.

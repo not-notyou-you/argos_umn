@@ -24,6 +24,7 @@ export default {
 
     const target = new URL(incoming.pathname + incoming.search, base);
     const headers = new Headers(request.headers);
+    headers.delete('x-middleware-subrequest');
     headers.set('X-Forwarded-Host', incoming.host);
     headers.set('X-Forwarded-Proto', 'https');
     headers.set('X-Forwarded-For', request.headers.get('CF-Connecting-IP') ?? '');

@@ -13,6 +13,8 @@ export const MAX_VIDEOS = 1;
 export const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 export const MAX_LOGO_BYTES = 2 * 1024 * 1024;
 export const MAX_VIDEO_BYTES = 95 * 1024 * 1024;
+/** Batas ukuran hasil dekompresi, agar bom gambar tidak menghabiskan memori. */
+export const MAX_IMAGE_PIXELS = 40_000_000;
 
 export type Owner = { type: 'project' | 'activity'; id: string };
 
@@ -29,11 +31,12 @@ export async function storeImage(input: Buffer) {
   const key = createHash('sha256').update(input).digest('hex').slice(0, 32);
   let meta;
   try {
-    meta = await sharp(input).metadata();
+    meta = await sharp(input, { limitInputPixels: MAX_IMAGE_PIXELS }).metadata();
   } catch {
     throw new MediaError('invalidType');
   }
   if (!meta.format || !['jpeg', 'png', 'webp'].includes(meta.format)) throw new MediaError('invalidType');
+  if (meta.width * meta.height > MAX_IMAGE_PIXELS) throw new MediaError('tooLarge');
 
   const dir = path.join(mediaDir(), 'images');
   await mkdir(dir, { recursive: true });
@@ -41,7 +44,7 @@ export async function storeImage(input: Buffer) {
   let width = 0;
   let height = 0;
   for (const w of IMAGE_WIDTHS) {
-    const { data, info } = await sharp(input)
+    const { data, info } = await sharp(input, { limitInputPixels: MAX_IMAGE_PIXELS })
       .rotate()
       .resize({ width: w, withoutEnlargement: true })
       .webp({ quality: 80 })

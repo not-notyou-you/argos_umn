@@ -23,9 +23,23 @@ const input = z.object({
 
 const fail = (error: string, status = 400) => Response.json({ error }, { status });
 
+/** Route handler tidak mendapat pemeriksaan origin bawaan Server Action. */
+function isCrossOrigin(request: Request) {
+  const origin = request.headers.get('origin');
+  if (!origin) return false;
+  const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host');
+  try {
+    return new URL(origin).host !== host;
+  } catch {
+    return true;
+  }
+}
+
 export async function POST(request: Request) {
+  if (isCrossOrigin(request)) return fail('common.error', 403);
   const user = await getCurrentUser();
   if (!user || user.mustChangePassword) return fail('common.error', 401);
+  if (Number(request.headers.get('content-length')) > MAX_VIDEO_BYTES + 1024 * 1024) return fail('editor.tooLarge', 413);
 
   const form = await request.formData().catch(() => null);
   const file = form?.get('file');
@@ -37,16 +51,16 @@ export async function POST(request: Request) {
   if (!(file instanceof File) || !parsed.success) return fail('common.invalid');
   const { purpose, ownerType, ownerId } = parsed.data;
 
-  const allowed =
+  const validTarget =
     purpose === 'carousel'
-      ? user.isCommittee
-      : !ownerId
-        ? false
-        : ownerType === 'project'
-          ? user.isCommittee || (await isProjectMember(user, ownerId))
-          : ownerType === 'activity'
-            ? user.isCommittee
-            : purpose === 'avatar' && (user.isCommittee || user.memberId === ownerId);
+      ? !ownerType
+      : Boolean(ownerId) && (purpose === 'avatar' ? ownerType === 'member' : ownerType === 'project' || ownerType === 'activity');
+  if (!validTarget) return fail('common.error', 403);
+
+  const allowed =
+    user.isCommittee ||
+    (ownerType === 'project' && (await isProjectMember(user, ownerId!))) ||
+    (purpose === 'avatar' && user.memberId === ownerId);
   if (!allowed) return fail('common.error', 403);
 
   const isVideo = purpose === 'gallery' && (file.type.startsWith('video/') || /\.(mp4|webm)$/i.test(file.name));

@@ -26,7 +26,7 @@ Next.js 16, TypeScript, PostgreSQL, Drizzle, Tailwind CSS, next-intl, Docker Com
 ├── assets/               Sumber brand: logo, font, palet
 ├── messages/             Kamus UI id.json dan en.json
 ├── public/brand/         Logo yang sudah dioptimalkan
-├── scripts/              Backup
+├── scripts/              Backup dan restore terenkripsi
 ├── src/
 │   ├── actions/          Server Action
 │   ├── app/
@@ -84,6 +84,7 @@ E2E menghapus isi database `argos_umn_test` setiap kali dijalankan. Atur `TEST_D
 | `SEED_SECRETARY_1_PASSWORD` | Password awal akun Secretary 1 |
 | `SEED_SECRETARY_2_PASSWORD` | Password awal akun Secretary 2 |
 | `POSTGRES_PASSWORD` | Password database di Docker Compose |
+| `BACKUP_PASSPHRASE` | Kunci enkripsi backup |
 | `TUNNEL_TOKEN` | Token Cloudflare Tunnel |
 | `ORIGIN_SHARED_SECRET` | Header rahasia dari Worker; wajib pada Quick Tunnel |
 
@@ -132,14 +133,13 @@ Detail fase tanpa domain dan dengan domain ada di [ARCHITECTURE.md](ARCHITECTURE
 
 ### Backup dan restore
 
-Layanan `backup` menyimpan database dan media ke `./backups` setiap hari. Folder itu masih berada di server yang sama, jadi salin ke lokasi lain.
+Layanan `backup` menyimpan database dan media terenkripsi ke `./backups` setiap hari. Folder itu masih berada di server yang sama, jadi salin ke lokasi lain. Simpan `BACKUP_PASSPHRASE` terpisah dari server: tanpa kunci itu backup tidak bisa dipulihkan.
 
 Restore:
 
 ```bash
 docker compose stop app
-docker compose exec -T db pg_restore -U argos -d argos_umn --clean --if-exists < backups/daily/db-TANGGAL.dump
-docker compose run --rm -v "$PWD/backups:/backups" tools tar -xzf /backups/daily/media-TANGGAL.tar.gz -C /data
+docker compose exec backup sh /scripts/restore.sh /backups/daily/db-TANGGAL.dump.enc /backups/daily/media-TANGGAL.tar.gz.enc
 docker compose up -d
 ```
 
