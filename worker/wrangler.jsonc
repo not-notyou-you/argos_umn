@@ -1,13 +1,18 @@
 {
-  "name": "argos-umn",
-  "main": "src/index.ts",
-  "compatibility_date": "2026-04-01",
-  "workers_dev": true
-
-  // Fase A (Workers VPC): isi setelah VPC Service dibuat, lalu hapus komentar.
-  // "vpc_services": [{ "binding": "ORIGIN", "service_id": "ISI_ID_VPC_SERVICE" }],
-  // "vars": { "ORIGIN_URL": "http://app:3000" }
-
-  // Fase B (Quick Tunnel): buat KV, lalu hapus komentar.
-  // "kv_namespaces": [{ "binding": "CONFIG", "id": "ISI_ID_KV" }]
+	"name": "argos-umn",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-04-01",
+	"workers_dev": true,
+	"kv_namespaces": [
+		{
+			"binding": "CONFIG",
+			"id": "7ee61b083b8049a9a3723b03271cb190",
+			"remote": true
+		}
+	]
+	// Fase A (Workers VPC): isi setelah VPC Service dibuat, lalu hapus komentar.
+	// "vpc_services": [{ "binding": "ORIGIN", "service_id": "ISI_ID_VPC_SERVICE" }],
+	// "vars": { "ORIGIN_URL": "http://app:3000" }
+	// Fase B (Quick Tunnel): buat KV, lalu hapus komentar.
+	// "kv_namespaces": [{ "binding": "CONFIG", "id": "ISI_ID_KV" }]
 }
