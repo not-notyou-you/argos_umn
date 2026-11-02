@@ -123,7 +123,7 @@ export default async function HomePage() {
           <Container>
             <LatestHeader title={t('latestProjects')} href={`${prefix}/projects`} action={t('seeAll')} />
             <article className="reveal-scale group on-dark relative mb-6 overflow-hidden rounded-md bg-ink">
-              <Cover storageKey={lead.coverKey} alt="" sizes="(min-width: 1200px) 1136px, 100vw" className="zoom-img aspect-[4/3] w-full opacity-80 md:aspect-[21/9]" />
+              <Cover storageKey={lead.coverKey} alt="" sizes="(min-width: 1200px) 1136px, 100vw" className="zoom-img aspect-[4/3] w-full opacity-80 md:aspect-[21/9]" kind="project" />
               <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
               <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-4 p-5 md:p-10">
                 <div className="max-w-2xl">
@@ -138,7 +138,7 @@ export default async function HomePage() {
             </article>
             <div className="reveal-items grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {others.map(({ project, coverKey, logoKey }) => (
-                <ContentCard key={project.id} href={`${prefix}/projects/${project.slug}`} name={project.name} description={project.description} coverKey={coverKey} logoKey={logoKey} meta={<StatusBadge status={project.status} />} />
+                <ContentCard key={project.id} href={`${prefix}/projects/${project.slug}`} name={project.name} description={project.description} coverKey={coverKey} logoKey={logoKey} meta={<StatusBadge status={project.status} />} kind="project" />
               ))}
             </div>
           </Container>
@@ -153,7 +153,7 @@ export default async function HomePage() {
           <ul tabIndex={0} aria-label={t('scroll')} className="reveal flex snap-x gap-5 overflow-x-auto px-4 pb-4 md:px-8 lg:pl-[max(2rem,calc((100vw-1200px)/2+2rem))]">
             {activities.map(({ activity, coverKey, logoKey }) => (
               <li key={activity.id} className="w-[78vw] max-w-[340px] shrink-0 snap-start">
-                <ContentCard href={`${prefix}/activities/${activity.slug}`} name={activity.name} description={activity.description} coverKey={coverKey} logoKey={logoKey} meta={<p className="text-sm font-semibold text-teal-text">{formatDate(activity.activityDate, locale)}</p>} />
+                <ContentCard href={`${prefix}/activities/${activity.slug}`} name={activity.name} description={activity.description} coverKey={coverKey} logoKey={logoKey} meta={<p className="text-sm font-semibold text-teal-text">{formatDate(activity.activityDate, locale)}</p>} kind="activity" />
               </li>
             ))}
           </ul>

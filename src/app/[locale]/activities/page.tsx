@@ -46,7 +46,7 @@ export default async function ActivitiesPage({ searchParams }: { searchParams: P
                         <p className="mt-2 line-clamp-2">{excerpt(activity.description)}</p>
                       </div>
                       <div className="overflow-hidden rounded-md">
-                        <Cover storageKey={coverKey} alt="" sizes="(min-width: 768px) 260px, 100vw" className="zoom-img aspect-[16/10] w-full" />
+                        <Cover storageKey={coverKey} alt="" sizes="(min-width: 768px) 260px, 100vw" className="zoom-img aspect-[16/10] w-full" kind="activity" title={activity.name} />
                       </div>
                     </li>
                   ))}

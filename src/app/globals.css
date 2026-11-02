@@ -118,6 +118,19 @@
   );
 }
 
+.blueprint-grid {
+  background-image:
+    radial-gradient(circle at 74% 55%, rgb(247 149 82 / 0.38), transparent 42%),
+    linear-gradient(rgb(102 181 197 / 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(102 181 197 / 0.1) 1px, transparent 1px);
+  background-size: auto, 24px 24px, 24px 24px;
+}
+
+.dot-bg {
+  background-image: radial-gradient(rgb(47 109 122 / 0.16) 1px, transparent 1px);
+  background-size: 14px 14px;
+}
+
 /* Satu periode pola = 84px, jadi perulangannya tidak terlihat melompat. */
 @property --slash-shift {
   syntax: '<length>';
@@ -181,7 +194,12 @@
 }
 
 .cut-corner {
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 28px), calc(100% - 28px) 100%, 0 100%);
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut, 28px)), calc(100% - var(--cut, 28px)) 100%, 0 100%);
+}
+
+/* Kartu member memakai potongan sudut yang lebih besar. */
+.member-card {
+  --cut: 48px;
 }
 
 .slash {
@@ -337,18 +355,34 @@
   display: none;
 }
 
-/* Bingkai mengikuti potongan sudut .cut-corner. 30px = 28px + 4px x tan(22,5 derajat). */
+/* Bingkai mengikuti potongan sudut .cut-corner. +2px = 4px x tan(22,5 derajat), dibulatkan. */
 .member-frame {
   opacity: 0;
   transition: opacity 0.25s;
   clip-path: polygon(evenodd,
-    0 0, 100% 0, 100% calc(100% - 28px), calc(100% - 28px) 100%, 0 100%, 0 0,
-    4px 4px, 4px calc(100% - 4px), calc(100% - 30px) calc(100% - 4px), calc(100% - 4px) calc(100% - 30px), calc(100% - 4px) 4px, 4px 4px);
+    0 0, 100% 0, 100% calc(100% - var(--cut, 28px)), calc(100% - var(--cut, 28px)) 100%, 0 100%, 0 0,
+    4px 4px, 4px calc(100% - 4px), calc(100% - var(--cut, 28px) - 2px) calc(100% - 4px), calc(100% - 4px) calc(100% - var(--cut, 28px) - 2px), calc(100% - 4px) 4px, 4px 4px);
 }
 
 .group:hover .member-frame,
 .group:focus-visible .member-frame {
   opacity: 1;
+}
+
+@property --member-spin {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+/* ease-in-out per putaran: lambat, cepat, lambat, lalu berulang. */
+.member-border {
+  background: conic-gradient(from var(--member-spin), #ffffff, #1f4f88, #000000, #66b5c5, #ffffff);
+  animation: member-spin 7s ease-in-out infinite;
+}
+
+@keyframes member-spin {
+  to { --member-spin: 360deg; }
 }
 
 .member-card:focus-visible {
@@ -378,6 +412,19 @@
 }
 
 .group:hover .zoom-img {
+  transform: scale(1.05);
+}
+
+/* Kartu member: gambar membesar 15%, inisial 5%. */
+.member-zoom, .member-zoom-initials {
+  transition: transform 0.9s var(--ease-out-expo);
+}
+
+.group:hover .member-zoom {
+  transform: scale(1.15);
+}
+
+.group:hover .member-zoom-initials {
   transform: scale(1.05);
 }
 

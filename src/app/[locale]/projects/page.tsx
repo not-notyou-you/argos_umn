@@ -38,7 +38,7 @@ export default async function ProjectsPage({ searchParams }: { searchParams: Pro
       ) : (
         <div className="reveal-items grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
           {rows.map(({ project, coverKey, logoKey }) => (
-            <ContentCard key={project.id} href={`${prefix}/projects/${project.slug}`} name={project.name} description={project.description} coverKey={coverKey} logoKey={logoKey} meta={<StatusBadge status={project.status} />} />
+            <ContentCard key={project.id} href={`${prefix}/projects/${project.slug}`} name={project.name} description={project.description} coverKey={coverKey} logoKey={logoKey} meta={<StatusBadge status={project.status} />} kind="project" />
           ))}
         </div>
       )}

@@ -86,6 +86,10 @@
     "next": "Aktivitas berikutnya",
     "count": "{n} aktivitas"
   },
+  "placeholder": {
+    "project": "Project",
+    "photoSoon": "Foto segera hadir"
+  },
   "status": {
     "done": "Done",
     "on_progress": "On Progress",

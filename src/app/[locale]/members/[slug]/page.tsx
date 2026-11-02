@@ -72,7 +72,7 @@ export default async function MemberDetail({ params }: Props) {
       <Container className="grid gap-12 pb-20 lg:grid-cols-[320px_1fr] lg:gap-16 md:pb-28">
         <div className="-mt-8 lg:-mt-48">
           <div className="on-dark cut-corner relative mx-auto aspect-[3/4] w-56 overflow-hidden bg-ink shadow-xl md:w-64 lg:sticky lg:top-[96px] lg:w-full">
-            <MemberPortrait name={member.fullName} photoKey={member.showPhoto ? photoKey : null} showInitials />
+            <MemberPortrait name={member.fullName} photoKey={member.showPhoto ? photoKey : null} />
           </div>
         </div>
 
