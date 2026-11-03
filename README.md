@@ -14,6 +14,7 @@ Website ini menampilkan profil klub, project, aktivitas, member, dan galeri, ser
 | [interface.md](interface.md) | Design token, komponen, wireframe, aksesibilitas |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Stack, tunnel, data model, keamanan, deployment |
 | [rancangan.md](rancangan.md) | Rancangan awal |
+| [DEPLOY.md](DEPLOY.md) | Langkah deploy dan update ke server Proxmox, untuk pemula |
 
 ## Teknologi
 
