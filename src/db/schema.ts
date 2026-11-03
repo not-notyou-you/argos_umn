@@ -19,11 +19,17 @@ import {
 export const accountKind = pgEnum('account_kind', ['system', 'member']);
 export const systemRole = pgEnum('system_role', ['president', 'vice_president', 'secretary']);
 export const memberStatus = pgEnum('member_status', ['onboarded', 'offboarded']);
-export const projectStatus = pgEnum('project_status', ['done', 'on_progress', 'cancelled']);
+export const projectStatus = pgEnum('project_status', ['open', 'on_progress', 'done', 'cancelled']);
 export const mediaPurpose = pgEnum('media_purpose', ['gallery', 'logo', 'avatar', 'carousel']);
 export const mediaKind = pgEnum('media_kind', ['image', 'video']);
 export const mediaSource = pgEnum('media_source', ['upload', 'drive', 'youtube']);
 export const requestStatus = pgEnum('request_status', ['pending', 'approved', 'rejected']);
+export const timelineStatus = pgEnum('timeline_status', ['not_yet', 'done']);
+export const timelineRequestKind = pgEnum('timeline_request_kind', ['status', 'dates']);
+
+export type ProjectStatus = (typeof projectStatus.enumValues)[number];
+/** Project selesai atau batal: anggota dan timeline dikunci. */
+export const LOCKED_STATUSES: readonly ProjectStatus[] = ['done', 'cancelled'];
 
 const id = () => uuid('id').primaryKey().defaultRandom();
 const stamps = () => ({
@@ -147,7 +153,28 @@ export const projects = pgTable('projects', {
 export const activities = pgTable('activities', {
   ...contentColumns(),
   activityDate: date('activity_date').notNull(),
+  registrationOpen: boolean('registration_open').notNull().default(false),
+  registrationUrl: text('registration_url'),
 });
+
+export const projectTimelineItems = pgTable(
+  'project_timeline_items',
+  {
+    id: id(),
+    projectId: uuid('project_id')
+      .notNull()
+      .references(() => projects.id, { onDelete: 'cascade' }),
+    title: text('title').notNull(),
+    description: text('description').notNull().default(''),
+    startDate: date('start_date').notNull(),
+    endDate: date('end_date').notNull(),
+    status: timelineStatus('status').notNull().default('not_yet'),
+    completedAt: date('completed_at'),
+    sortOrder: integer('sort_order').notNull().default(0),
+    ...stamps(),
+  },
+  (t) => [check('timeline_dates', sql`${t.endDate} >= ${t.startDate}`), index('timeline_project_idx').on(t.projectId)],
+);
 
 export const projectMembers = pgTable(
   'project_members',
@@ -199,6 +226,63 @@ export const involvementRequests = pgTable(
     uniqueIndex('request_pending_activity')
       .on(t.memberId, t.activityId)
       .where(sql`${t.status} = 'pending' and ${t.activityId} is not null`),
+  ],
+);
+
+export const timelineRequests = pgTable(
+  'timeline_requests',
+  {
+    id: id(),
+    itemId: uuid('item_id')
+      .notNull()
+      .references(() => projectTimelineItems.id, { onDelete: 'cascade' }),
+    memberId: uuid('member_id')
+      .notNull()
+      .references(() => members.id, { onDelete: 'cascade' }),
+    kind: timelineRequestKind('kind').notNull(),
+    proposedStatus: timelineStatus('proposed_status'),
+    proposedStart: date('proposed_start'),
+    proposedEnd: date('proposed_end'),
+    note: text('note').notNull().default(''),
+    evidenceUrl: text('evidence_url'),
+    status: requestStatus('status').notNull().default('pending'),
+    decidedBy: uuid('decided_by').references(() => accounts.id, { onDelete: 'set null' }),
+    decidedAt: timestamp('decided_at', { withTimezone: true }),
+    decisionNote: text('decision_note'),
+    ...stamps(),
+  },
+  (t) => [
+    check(
+      'timeline_request_payload',
+      sql`(${t.kind} = 'status' and ${t.proposedStatus} is not null) or (${t.kind} = 'dates' and ${t.proposedStart} is not null and ${t.proposedEnd} >= ${t.proposedStart})`,
+    ),
+    uniqueIndex('timeline_request_pending').on(t.itemId, t.memberId, t.kind).where(sql`${t.status} = 'pending'`),
+  ],
+);
+
+export type ProposalStage = { title: string; description: string; startDate: string; endDate: string };
+
+/** Usulan project dari member. Timeline disimpan sebagai jsonb sampai usulan diterima dan disalin ke project_timeline_items. */
+export const projectProposals = pgTable(
+  'project_proposals',
+  {
+    id: id(),
+    memberId: uuid('member_id')
+      .notNull()
+      .references(() => members.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    description: text('description').notNull(),
+    timeline: jsonb('timeline').$type<ProposalStage[]>().notNull(),
+    status: requestStatus('status').notNull().default('pending'),
+    decidedBy: uuid('decided_by').references(() => accounts.id, { onDelete: 'set null' }),
+    decidedAt: timestamp('decided_at', { withTimezone: true }),
+    decisionNote: text('decision_note'),
+    projectId: uuid('project_id').references(() => projects.id, { onDelete: 'set null' }),
+    ...stamps(),
+  },
+  (t) => [
+    check('proposal_reject_feedback', sql`${t.status} <> 'rejected' or length(trim(coalesce(${t.decisionNote}, ''))) > 0`),
+    index('proposal_member_idx').on(t.memberId),
   ],
 );
 

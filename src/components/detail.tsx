@@ -24,6 +24,8 @@ export function DetailPage({
   team,
   memberPrefix,
   actions,
+  extra,
+  placeholderSrc,
   next,
 }: {
   backHref: string;
@@ -39,6 +41,10 @@ export function DetailPage({
   team: Person[];
   memberPrefix: string;
   actions?: ReactNode;
+  /** Bagian tambahan di bawah deskripsi, misalnya timeline project. */
+  extra?: ReactNode;
+  /** Gambar latar saat tidak ada cover; tanpa ini dipakai pola helm. */
+  placeholderSrc?: string;
   next?: { href: string; name: string; label: string };
 }) {
   const cover = media.find((m) => m.kind === 'image' && m.storageKey);
@@ -47,6 +53,8 @@ export function DetailPage({
       <section className="on-dark relative isolate flex min-h-[62svh] items-end overflow-hidden bg-ink">
         {cover?.storageKey ? (
           <img src={imageUrl(cover.storageKey, 1600)} srcSet={imageSrcSet(cover.storageKey)} sizes="100vw" alt={cover.altText ?? name} className="media-loading ken-burns absolute inset-0 -z-20 size-full object-cover" />
+        ) : placeholderSrc ? (
+          <img src={placeholderSrc} alt="" className="absolute inset-0 -z-20 size-full object-cover object-bottom" />
         ) : (
           <CoverPlaceholderClient className="absolute inset-0 -z-20" />
         )}
@@ -66,6 +74,7 @@ export function DetailPage({
           <section className="reveal min-w-0">
             <h2 className="label text-orange-text">{aboutLabel}</h2>
             <p className="prose-text mt-4 text-lg leading-8">{description}</p>
+            {extra}
           </section>
           <aside className="flex flex-col gap-8">
             {actions}

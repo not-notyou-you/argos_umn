@@ -15,8 +15,9 @@
     "skip": "Skip to content",
     "language": "Language",
     "loading": "Loading",
-
-    "theme": "Switch between light and dark theme"
+    "theme": "Switch between light and dark theme",
+    "information": "Information",
+    "proposals": "Project Proposals"
   },
   "home": {
     "viewProjects": "View Projects",
@@ -46,7 +47,7 @@
     "wordShare": "Share",
     "wordLead": "Lead",
     "scroll": "Scroll to see activities",
-    "focusIntro": "Seven fields we learn and practice together at Argos Club @ UMN.",
+    "swipe": "Swipe",
     "featured": "Featured project"
   },
   "focus": {
@@ -60,7 +61,6 @@
   },
   "project": {
     "title": "Our Project",
-    "intro": "Work built by Argos Club @ UMN members.",
     "back": "Our Project",
     "all": "All",
     "open": "Open Project",
@@ -77,20 +77,23 @@
   },
   "activity": {
     "title": "Our Activity",
-    "intro": "What we do together.",
     "back": "Our Activity",
     "about": "About this activity",
     "team": "Participants",
     "empty": "No activities yet.",
     "search": "Search activities",
     "next": "Next activity",
-    "count": "{n} activities"
+    "count": "{n} activities",
+    "joinTitle": "The next activity could be your story.",
+    "joinBody": "Sign up as an Argos Club member to join workshops, competitions, and projects together. Official registration is handled by The IO Foundation.",
+    "joinCta": "Become a member"
   },
   "placeholder": {
     "project": "Project",
-    "photoSoon": "Photo coming soon"
+    "activity": "Activity"
   },
   "status": {
+    "open": "Open Recruitment",
     "done": "Done",
     "on_progress": "On Progress",
     "cancelled": "Cancelled"
@@ -123,7 +126,6 @@
     "typeProject": "Project",
     "typeActivity": "Activity",
     "title": "The Galleries",
-    "intro": "Photos and videos from our projects and activities.",
     "all": "All",
     "projects": "Projects",
     "activities": "Activities",
@@ -143,12 +145,10 @@
   },
   "footer": {
     "part": "Argos Club @ UMN is part of the Argos Clubs by The IO Foundation.",
-    "host": "Host university: Universitas Multimedia Nusantara",
     "links": "Official links",
     "site": "Argos Clubs website",
     "community": "TechUp Community",
-    "join": "Join",
-    "tagline": "The UMN student technology community."
+    "join": "Join"
   },
   "auth": {
     "title": "Sign in to Argos Club",
@@ -208,10 +208,8 @@
   },
   "errors": {
     "forbiddenTitle": "This gate is locked.",
-
     "forbiddenBody": "Your account doesn't have access to this page. If it should, contact the committee.",
     "notFoundTitle": "This ship is off course.",
-
     "notFoundBody": "The page you're looking for doesn't exist or has moved.",
     "home": "Back to home",
     "seeProjects": "See projects",
@@ -364,6 +362,94 @@
     "entity": "Object",
     "time": "Time",
     "searchMember": "Search members",
-    "allStatuses": "All statuses"
+    "allStatuses": "All statuses",
+    "reasonRequired": "Feedback (required when rejecting)",
+    "tab_proposals": "Project proposals",
+    "tab_join": "Join requests",
+    "tab_timeline": "Timeline changes",
+    "tab_history": "History",
+    "tabIntro_proposals": "Project proposals from members. Approved proposals open for recruitment right away; rejections require feedback.",
+    "tabIntro_join": "Members who want to join an open-recruitment project or be listed as activity participants.",
+    "tabIntro_timeline": "Requests to change a stage's status or dates from members of on-progress projects.",
+    "tabIntro_history": "The last 50 decisions across all request types.",
+    "kindJoinProject": "Join project",
+    "kindJoinActivity": "Activity participant",
+    "joinNotOpen": "This project is no longer open for recruitment.",
+    "noPendingTab": "No pending requests in this category.",
+    "noHistory": "No decisions yet."
+  },
+  "timeline": {
+    "title": "Timeline",
+    "intro": "Required before a project opens. The public sees each stage's title, dates, and status, without the description.",
+    "itemTitle": "Stage title",
+    "start": "Start",
+    "end": "End",
+    "state": "Stage status",
+    "not_yet": "Not yet",
+    "done": "Done",
+    "add": "Add stage",
+    "empty": "No timeline stages yet.",
+    "required": "An open or on-progress project needs at least one timeline stage.",
+    "membersRequired": "An on-progress project needs at least one member.",
+    "locked": "This project is done or cancelled; members and timeline cannot be changed.",
+    "lockedNote": "Locked because the project is done or cancelled. Change the status to unlock it.",
+    "invalid": "Fill in the title and dates; the end date cannot be before the start date.",
+    "late": "Late",
+    "onTime": "On time",
+    "completedOn": "Done {date}",
+    "progress": "{done} of {total} stages done",
+    "requestTitle": "Request a change",
+    "requestIntro": "Changes to a stage's status or dates are decided by the committee.",
+    "kind": "Change type",
+    "kindStatus": "Stage status",
+    "kindDates": "Stage dates",
+    "proposedStatus": "Proposed status",
+    "evidenceUrl": "Evidence link (Drive, GitHub, etc.)",
+    "note": "Explanation",
+    "send": "Send request",
+    "evidenceRequired": "A status request needs an explanation or an evidence link.",
+    "requests": "Timeline requests",
+    "current": "Current",
+    "proposed": "Proposed",
+    "evidence": "Evidence",
+    "applicants": "Applicants",
+    "noApplicants": "No applicants yet.",
+    "onlyOnProgress": "Requests can only be sent while the project is on progress.",
+    "unchanged": "The proposal matches the current value."
+  },
+  "information": {
+    "title": "Information",
+    "intro": "Projects and events currently open for registration.",
+    "projects": "Open recruitment projects",
+    "activities": "Events open for registration",
+    "noProjects": "No projects are recruiting right now.",
+    "noActivities": "No events are open for registration right now.",
+    "register": "Apply",
+    "registerNote": "Why you want to join (optional)",
+    "joined": "You are already a member",
+    "goRegister": "Open registration form",
+    "registrationOpen": "Registration open",
+    "registrationUrl": "Registration link (managed by The IO Foundation)",
+    "urlRequired": "Add a registration link before opening registration."
+  },
+  "proposal": {
+    "title": "Project Proposals",
+    "intro": "Propose a new project to the committee. If approved, it opens for recruitment right away and you become a member automatically.",
+    "name": "Project title",
+    "descriptionHint": "Describe the problem, the technical plan, and the benefits.",
+    "timelineHint": "At least one stage. The committee uses this timeline to judge whether the proposal is feasible.",
+    "stage": "Stage {n}",
+    "submit": "Submit proposal",
+    "mine": "My proposals",
+    "submittedOn": "Submitted {date} · {n} stages",
+    "feedback": "Committee feedback",
+    "openProject": "Open project",
+    "invalid": "Fill in the project title and description.",
+    "timelineInvalid": "The timeline needs at least one stage; each stage needs a title and dates, and the end date cannot be before the start date.",
+    "tooMany": "You already have 3 proposals waiting for a committee decision.",
+    "feedbackRequired": "A rejection must include feedback for the proposer.",
+    "committeeTitle": "Project proposals",
+    "approveNote": "If approved, the project is created as Open Recruitment, published right away, and the proposer becomes a member.",
+    "label": "Proposal"
   }
 }

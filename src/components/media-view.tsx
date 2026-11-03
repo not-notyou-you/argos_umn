@@ -4,7 +4,7 @@
 import { ArrowUpRight, ChevronLeft, ChevronRight, Play, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { type MediaLike, embedUrl, imageUrl, videoFileUrl } from '@/lib/media-url';
 import { CoverPlaceholderClient } from './cover-placeholder-client';
 
@@ -196,8 +196,17 @@ export function GalleryGrid({ items }: { items: ViewItem[] }) {
   return (
     <>
       <div className="flex flex-col gap-16 md:gap-24">
-        {[...groups].map(([key, group]) => (
-          <section key={key} className="grid gap-6 lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-10">
+        {[...groups].map(([key, group], groupIndex) => (
+          <Fragment key={key}>
+          {/* Pemisah antar-bulan, sama dengan pita di bawah hero beranda: oranye dengan garis miring hitam berjalan. */}
+          {groupIndex > 0 && (
+            <div aria-hidden className="full-bleed overflow-hidden bg-brand-orange py-4">
+              <div className="marquee-track flex w-max">
+                {Array.from({ length: 60 }, (_, i) => <span key={i} className="slash mr-6 shrink-0 bg-ink!" />)}
+              </div>
+            </div>
+          )}
+          <section className="grid gap-6 lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-10">
             <header className="self-start lg:sticky lg:top-[172px]">
               <h2 className="text-4xl leading-tight font-extrabold">{group.month}</h2>
               <p className="mt-1 text-lg font-bold text-orange-text">{group.year}</p>
@@ -221,6 +230,7 @@ export function GalleryGrid({ items }: { items: ViewItem[] }) {
               ))}
             </ul>
           </section>
+          </Fragment>
         ))}
       </div>
       {open !== null && <GalleryModal items={items} index={open} onClose={() => setOpen(null)} onMove={setOpen} />}

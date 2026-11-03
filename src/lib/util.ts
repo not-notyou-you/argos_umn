@@ -1,3 +1,6 @@
+/** Pendaftaran resmi anggota Argos Club dilakukan lewat The IO Foundation. */
+export const JOIN_URL = 'https://join.theiofoundation.org';
+
 export function slugify(text: string) {
   return (
     text

@@ -22,6 +22,7 @@ export default async function EditActivity({ params }: { params: Promise<{ id: s
   const t = await getTranslations('committee');
   const c = await getTranslations('common');
   const e = await getTranslations('editor');
+  const info = await getTranslations('information');
   const [media, allMembers, team, logoKey] = await Promise.all([
     ownerMedia({ activity: id }),
     db.select({ id: members.id, label: members.fullName }).from(members).orderBy(asc(members.fullName)),
@@ -52,6 +53,11 @@ export default async function EditActivity({ params }: { params: Promise<{ id: s
           <Field label={c('name')} htmlFor="name"><input id="name" name="name" required maxLength={120} defaultValue={activity.name} className="input" /></Field>
           <Field label={t('activityDate')} htmlFor="activityDate"><input id="activityDate" name="activityDate" type="date" required defaultValue={activity.activityDate} className="input" /></Field>
           <Field label={c('description')} htmlFor="description"><textarea id="description" name="description" rows={7} maxLength={10000} defaultValue={activity.description} className="input" /></Field>
+          <label className="flex min-h-11 items-center gap-2 font-semibold text-heading">
+            <input type="checkbox" name="registrationOpen" defaultChecked={activity.registrationOpen} className="size-5" />
+            {info('registrationOpen')}
+          </label>
+          <Field label={info('registrationUrl')} htmlFor="registrationUrl"><input id="registrationUrl" name="registrationUrl" type="url" maxLength={500} defaultValue={activity.registrationUrl ?? ''} className="input" /></Field>
           <CheckList name="memberIds" label={t('participants')} options={allMembers} selected={new Set(team.map((m) => m.id))} />
         </ActionForm>
       </Card>

@@ -93,7 +93,13 @@ Seluruh halaman dalam `rancangan.md`, UI dua bahasa (ID/EN), akun buatan komite,
 
 - **FR-P5** Daftar project yang sudah dipublikasikan, bisa difilter berdasarkan status.
 - **FR-P6** Detail project menampilkan nama, logo, deskripsi, status, anggota yang terlibat, dan media.
-- **FR-P7** Status hanya salah satu dari `done`, `on progress`, `cancelled`.
+- **FR-P7** Status hanya salah satu dari `open`, `on progress`, `done`, `cancelled`, dan hanya komite yang bisa mengubahnya. Status boleh dimundurkan; begitu bukan `done`/`cancelled`, anggota dan timeline terbuka lagi.
+  - `open` (open recruitment): wajib punya minimal satu tahap timeline, boleh tanpa anggota. Member mendaftar dari halaman **Information**, lalu komite menerima atau menolak.
+  - `on progress`: wajib punya timeline dan minimal satu anggota. Komite tetap bisa mengubah anggota dan timeline. Anggota project mengajukan perubahan status atau tanggal tahap (disertai penjelasan atau tautan bukti), lalu komite yang memutuskan.
+  - `done` dan `cancelled`: anggota dan timeline terkunci.
+- **FR-P7a** Setiap tahap timeline punya judul, deskripsi, tanggal mulai–selesai, dan status `done`/`not yet`. Publik melihat judul, tanggal, status, dan penanda terlambat, tanpa deskripsi. Timeline tidak ditampilkan publik untuk project `open`.
+- **FR-P7b** Halaman member **Information** menampilkan project `open` dan aktivitas yang membuka pendaftaran. Pendaftaran aktivitas memakai tautan eksternal yang dikelola The IO Foundation; komite cukup mengisi tautan dan menyalakan tanda pendaftaran dibuka.
+- **FR-P7c** Member bisa mengusulkan project dari halaman **Usulan Project** dengan judul, deskripsi, dan timeline (minimal satu tahap; maksimal tiga usulan pending per member). Komite menerima atau menolak. Jika diterima, project dibuat berstatus `open`, langsung dipublikasikan, timeline disalin, dan pengusul menjadi anggota. Penolakan wajib disertai feedback yang terlihat oleh pengusul.
 - **FR-P8** Ada tiga tombol: **Open Project**, **Open GitHub**, **Open Documentation**. Setiap tombol hanya muncul jika diaktifkan dan URL-nya terisi.
 
 ### 5.3 Our Activity

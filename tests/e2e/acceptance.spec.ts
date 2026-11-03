@@ -130,7 +130,7 @@ test('member wajib ganti password dan tidak bisa membuka panel komite', async ({
   await changePassword(page, memberTemp, NEW_PASSWORD);
   await expect(page).toHaveURL(/me\/profile/);
   await page.goto('/committee');
-  await expect(page.getByText('Halaman ini khusus komite.')).toBeVisible();
+  await expect(page.getByText('Gerbang ini terkunci.')).toBeVisible();
 });
 
 test('project: media, tombol, placeholder, dan publikasi', async ({ page }) => {
@@ -222,7 +222,7 @@ test('member tidak bisa upload ke project orang lain', async ({ page }) => {
   });
   expect(response.status()).toBe(403);
   await page.goto(`/me/projects/${id}`);
-  await expect(page.getByText('Halaman ini khusus komite.')).toBeVisible();
+  await expect(page.getByText('Gerbang ini terkunci.')).toBeVisible();
   await expect(page.getByLabel('Deskripsi')).toHaveCount(0);
 });
 
@@ -268,9 +268,11 @@ test('request keterlibatan yang disetujui langsung tampil', async ({ page }) => 
 
   await page.context().clearCookies();
   await presidentLogin(page);
-  await page.goto('/committee/requests');
+  await page.goto('/committee/requests?tab=join');
   await expect(page.getByText('Budi Uji')).toBeVisible();
   await page.getByRole('button', { name: 'Setujui' }).click();
+  await expect(page.getByText('Budi Uji')).toHaveCount(0);
+  await page.goto('/committee/requests?tab=history');
   await expect(page.getByText('Disetujui')).toBeVisible();
 
   await page.goto('/activities/workshop-uji');
@@ -305,7 +307,7 @@ test('posisi President memberi akses, dan berakhir setelah bulan selesai', async
   // Masa jabatan berakhir: akses hilang tanpa login ulang.
   await sql`update member_positions set end_date = '2026-01-31' where member_id = ${id} and end_date = '2099-12-31'`;
   await member.goto('/committee');
-  await expect(member.getByText('Halaman ini khusus komite.')).toBeVisible();
+  await expect(member.getByText('Gerbang ini terkunci.')).toBeVisible();
 
   await sql`update member_positions set end_date = '2099-12-31' where member_id = ${id} and end_date = '2026-01-31'`;
   await member.goto('/committee');

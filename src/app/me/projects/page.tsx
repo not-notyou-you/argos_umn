@@ -20,7 +20,7 @@ export default async function MyProjectsPage() {
         <ul className="grid gap-4 sm:grid-cols-2">
           {projects.map((project) => (
             <li key={project.id} className="overflow-hidden rounded-md border border-line bg-surface">
-              <Cover storageKey={project.coverKey} alt="" sizes="400px" className="aspect-[16/10] w-full" />
+              <Cover storageKey={project.coverKey} kind="project" title={project.name} alt="" sizes="400px" className="aspect-[16/10] w-full" />
               <div className="flex flex-col items-start gap-2 p-4">
                 <h2 className="text-xl leading-7 font-semibold">{project.name}</h2>
                 <StatusBadge status={project.status} />

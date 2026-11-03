@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { DetailPage } from '@/components/detail';
+import { ACTIVITY_PLACEHOLDER } from '@/components/display';
 import { db } from '@/db';
 import { activities } from '@/db/schema';
 import { listActivities, mediaKey, ownerMedia, participants } from '@/lib/queries';
@@ -37,6 +38,7 @@ export default async function ActivityDetail({ params }: Props) {
 
   return (
     <DetailPage
+      placeholderSrc={ACTIVITY_PLACEHOLDER}
       backHref={`${prefix}/activities`}
       backLabel={t('back')}
       name={activity.name}

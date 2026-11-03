@@ -13,14 +13,16 @@ import {
   members,
   positions,
   projectMembers,
+  projectTimelineItems,
   projects,
   sessions,
+  timelineRequests,
 } from '@/db/schema';
 import { monthEnd, monthStart, todayInJakarta } from '@/lib/access';
 import { audit } from '@/lib/audit';
-import { requireCommittee, requireMember } from '@/lib/auth';
+import { isProjectMember, requireCommittee, requireMember } from '@/lib/auth';
 import { hashPassword, temporaryPassword } from '@/lib/password';
-import { slugify } from '@/lib/util';
+import { safeHttpUrl, slugify } from '@/lib/util';
 import type { ActionResult } from './types';
 
 const uuid = z.uuid();
@@ -65,7 +67,10 @@ export async function sendInvolvementRequest(formData: FormData): Promise<Action
 
   const [published] =
     type === 'project'
-      ? await db.select({ id: projects.id }).from(projects).where(and(eq(projects.id, id), eq(projects.isPublished, true)))
+      ? await db
+          .select({ id: projects.id })
+          .from(projects)
+          .where(and(eq(projects.id, id), eq(projects.isPublished, true), eq(projects.status, 'open')))
       : await db.select({ id: activities.id }).from(activities).where(and(eq(activities.id, id), eq(activities.isPublished, true)));
   if (!published) return { error: 'common.invalid' };
 
@@ -80,6 +85,15 @@ export async function sendInvolvementRequest(formData: FormData): Promise<Action
 export async function decideRequest(requestId: string, approve: boolean, decisionNote: string): Promise<ActionResult> {
   const user = await requireCommittee();
   const id = uuid.parse(requestId);
+  if (approve) {
+    // Project yang sudah done/cancelled tidak menerima anggota baru.
+    const [target] = await db
+      .select({ status: projects.status })
+      .from(involvementRequests)
+      .innerJoin(projects, eq(projects.id, involvementRequests.projectId))
+      .where(eq(involvementRequests.id, id));
+    if (target && target.status !== 'open' && target.status !== 'on_progress') return { error: 'timeline.locked' };
+  }
   await db.transaction(async (tx) => {
     const [request] = await tx
       .update(involvementRequests)
@@ -99,6 +113,80 @@ export async function decideRequest(requestId: string, approve: boolean, decisio
     }
   });
   await audit(user.accountId, approve ? 'request.approve' : 'request.reject', 'involvement_request', id);
+  return { ok: true };
+}
+
+const timelineRequestInput = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('status'), proposedStatus: z.enum(['not_yet', 'done']) }),
+  z.object({ kind: z.literal('dates'), proposedStart: z.iso.date(), proposedEnd: z.iso.date() }).refine((v) => v.proposedEnd >= v.proposedStart),
+]);
+
+/** Anggota project on progress mengusulkan perubahan status atau tanggal timeline; komite yang memutuskan. */
+export async function sendTimelineRequest(itemId: string, formData: FormData): Promise<ActionResult> {
+  const user = await requireMember();
+  const [row] = await db
+    .select({ item: projectTimelineItems, projectStatus: projects.status })
+    .from(projectTimelineItems)
+    .innerJoin(projects, eq(projects.id, projectTimelineItems.projectId))
+    .where(eq(projectTimelineItems.id, uuid.parse(itemId)));
+  if (!row || !(await isProjectMember(user, row.item.projectId))) forbidden();
+  if (row.projectStatus !== 'on_progress') return { error: 'timeline.locked' };
+
+  const parsed = timelineRequestInput.safeParse({
+    kind: formData.get('kind'),
+    proposedStatus: formData.get('proposedStatus') ?? undefined,
+    proposedStart: formData.get('proposedStart') ?? undefined,
+    proposedEnd: formData.get('proposedEnd') ?? undefined,
+  });
+  if (!parsed.success) return { error: 'timeline.invalid' };
+  const rawUrl = String(formData.get('evidenceUrl') ?? '').trim().slice(0, 500);
+  const evidenceUrl = rawUrl ? safeHttpUrl(rawUrl) : null;
+  if (rawUrl && !evidenceUrl) return { error: 'common.invalidUrl' };
+  const note = String(formData.get('note') ?? '').trim().slice(0, 1000);
+  if (parsed.data.kind === 'status' && !note && !evidenceUrl) return { error: 'timeline.evidenceRequired' };
+  const unchanged =
+    parsed.data.kind === 'status'
+      ? parsed.data.proposedStatus === row.item.status
+      : parsed.data.proposedStart === row.item.startDate && parsed.data.proposedEnd === row.item.endDate;
+  if (unchanged) return { error: 'timeline.unchanged' };
+
+  const inserted = await db
+    .insert(timelineRequests)
+    .values({ itemId: row.item.id, memberId: user.memberId, note, evidenceUrl, ...parsed.data })
+    .onConflictDoNothing()
+    .returning();
+  if (!inserted.length) return { error: 'me.requestDuplicate' };
+  await audit(user.accountId, 'timeline.request', 'project', row.item.projectId, { itemId: row.item.id, kind: parsed.data.kind });
+  return { ok: true };
+}
+
+export async function decideTimelineRequest(requestId: string, approve: boolean, decisionNote: string): Promise<ActionResult> {
+  const user = await requireCommittee();
+  const id = uuid.parse(requestId);
+  const error = await db.transaction(async (tx) => {
+    const [found] = await tx
+      .select({ request: timelineRequests, item: projectTimelineItems, projectStatus: projects.status })
+      .from(timelineRequests)
+      .innerJoin(projectTimelineItems, eq(projectTimelineItems.id, timelineRequests.itemId))
+      .innerJoin(projects, eq(projects.id, projectTimelineItems.projectId))
+      .where(and(eq(timelineRequests.id, id), eq(timelineRequests.status, 'pending')));
+    if (!found) return null;
+    if (approve && (found.projectStatus === 'done' || found.projectStatus === 'cancelled')) return 'timeline.locked';
+    await tx
+      .update(timelineRequests)
+      .set({ status: approve ? 'approved' : 'rejected', decidedBy: user.accountId, decidedAt: new Date(), decisionNote: decisionNote.trim().slice(0, 500) || null })
+      .where(eq(timelineRequests.id, id));
+    if (!approve) return null;
+    const { request, item } = found;
+    const change =
+      request.kind === 'status'
+        ? { status: request.proposedStatus!, completedAt: request.proposedStatus === 'done' ? (item.completedAt ?? todayInJakarta()) : null }
+        : { startDate: request.proposedStart!, endDate: request.proposedEnd! };
+    await tx.update(projectTimelineItems).set(change).where(eq(projectTimelineItems.id, item.id));
+    return null;
+  });
+  if (error) return { error };
+  await audit(user.accountId, approve ? 'timeline.request_approve' : 'timeline.request_reject', 'timeline_request', id);
   return { ok: true };
 }
 

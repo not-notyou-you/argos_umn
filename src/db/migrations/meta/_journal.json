@@ -15,6 +15,20 @@
       "when": 1793440156711,
       "tag": "0001_protect_system_accounts",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793688900726,
+      "tag": "0002_project_open_timeline",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793695118733,
+      "tag": "0003_project_proposals",
+      "breakpoints": true
     }
   ]
 }

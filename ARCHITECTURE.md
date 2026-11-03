@@ -149,12 +149,20 @@ Kolom bersama: `slug`, `name`, `logo_media_id`, `description`, `is_published`, `
 
 Khusus `projects`:
 
-- `status` enum `done`, `on_progress`, `cancelled`, default `on_progress`
+- `status` enum `open`, `on_progress`, `done`, `cancelled`, default `on_progress`. `done`/`cancelled` (`LOCKED_STATUSES`) mengunci anggota dan timeline; aturan transisi ditegakkan di `updateProjectAdmin`.
 - `project_url`, `project_url_visible`
 - `github_url`, `github_url_visible`
 - `docs_url`, `docs_url_visible`
 
-Khusus `activities`: `activity_date` date (tambahan dari rancangan, dibutuhkan untuk pengurutan).
+Khusus `activities`: `activity_date` date (tambahan dari rancangan, dibutuhkan untuk pengurutan), `registration_open` bool, `registration_url` text null (wajib jika pendaftaran dibuka).
+
+`project_timeline_items`: `project_id`, `title`, `description`, `start_date`, `end_date` (CHECK `end_date >= start_date`), `status` enum `not_yet`, `done`, `completed_at` date null (diisi saat ditandai done, untuk penanda terlambat), `sort_order`. Kueri publik (`projectTimeline`) tidak memilih `description`.
+
+`timeline_requests`: pengajuan anggota project `on_progress`. `item_id`, `member_id`, `kind` enum `status`, `dates`, `proposed_status` / `proposed_start` + `proposed_end` (CHECK sesuai `kind`), `note`, `evidence_url`, `status` `request_status`, `decided_by`, `decided_at`, `decision_note`. Partial unique index: satu pengajuan pending per (tahap, member, jenis).
+
+`project_proposals`: usulan project dari member. `member_id`, `name`, `description`, `timeline` jsonb (`{title, description, startDate, endDate}[]`, disalin ke `project_timeline_items` saat diterima), `status` `request_status`, `decided_by`, `decided_at`, `decision_note`, `project_id` (diisi saat diterima). CHECK `proposal_reject_feedback`: status `rejected` wajib punya `decision_note`. Logika penerimaan ada di `decideProposal` (`src/actions/proposals.ts`).
+
+Pendaftaran ke project `open` memakai `involvement_requests`; `sendInvolvementRequest` menolak project yang tidak `open`.
 
 Join table `project_members` dan `activity_members` memakai primary key gabungan.
 

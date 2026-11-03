@@ -2,18 +2,20 @@
 import { ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import type { ProjectStatus } from '@/db/schema';
 import { imageSrcSet, imageUrl } from '@/lib/media-url';
 import { excerpt } from '@/lib/util';
 import { Helmet } from './helmet';
 
-export function StatusBadge({ status }: { status: 'done' | 'on_progress' | 'cancelled' }) {
+export function StatusBadge({ status }: { status: ProjectStatus }) {
   const t = useTranslations('status');
   const tone = {
+    open: 'border-dashed border-teal-text text-teal-text',
     done: 'border-teal-text text-teal-text',
     on_progress: 'border-orange-text text-orange-text',
     cancelled: 'border-brand-dark-gray text-brand-dark-gray',
   }[status];
-  const dot = { done: 'bg-teal-solid', on_progress: 'bg-brand-orange', cancelled: 'bg-brand-light-gray' }[status];
+  const dot = { open: 'bg-brand-light-blue', done: 'bg-teal-solid', on_progress: 'bg-brand-orange', cancelled: 'bg-brand-light-gray' }[status];
   return (
     <span className={`inline-flex items-center gap-2 rounded-sm border bg-surface px-2 py-0.5 text-sm font-semibold ${tone}`}>
       <span aria-hidden className={`size-2 rounded-full ${dot}`} />
@@ -30,47 +32,45 @@ export function CoverPlaceholder({ className = '' }: { className?: string }) {
   );
 }
 
-/** Sampul project tanpa gambar: maskot di atas kisi blueprint. */
-function BlueprintPlaceholder({ title, className = '' }: { title?: string; className?: string }) {
-  const t = useTranslations('placeholder');
+const PROJECT_PLACEHOLDERS = ['/brand/bg/day.webp', '/brand/bg/night.webp'];
+
+/**
+ * Latar siang atau malam untuk project tanpa gambar. Dipilih dari hash nama, jadi
+ * tampak acak antar project tetapi tetap sama di setiap halaman dan render.
+ */
+export function projectPlaceholder(seed = '') {
+  let hash = 0;
+  for (const char of seed) hash = (hash * 31 + char.charCodeAt(0)) | 0;
+  return PROJECT_PLACEHOLDERS[Math.abs(hash) % PROJECT_PLACEHOLDERS.length];
+}
+
+export const ACTIVITY_PLACEHOLDER = '/brand/bg/dawn.webp';
+
+/** Sampul tanpa gambar: ilustrasi (siang/malam untuk project, fajar untuk activity) dengan judul di atasnya. */
+function ScenePlaceholder({ src, label, title, className = '' }: { src: string; label: string; title?: string; className?: string }) {
   return (
-    <div className={`@container blueprint-grid relative overflow-hidden bg-ink text-white ${className}`}>
-      <span aria-hidden className="absolute top-2 left-2 size-4 border-t-2 border-l-2 border-brand-light-blue/60" />
-      <span aria-hidden className="absolute right-2 bottom-2 size-4 border-r-2 border-b-2 border-brand-light-blue/60" />
-      <img src="/brand/mascot/samping.webp" alt="" loading="lazy" className="absolute right-[5%] -bottom-[6%] h-[100%] w-auto" />
+    <div className={`@container relative overflow-hidden bg-ink text-white ${className}`}>
+      <img src={src} alt="" loading="lazy" className="absolute inset-0 size-full object-cover object-bottom" />
       {title && (
-        <div className="absolute top-[12%] left-[7%] hidden w-[52%] @min-[200px]:block">
-          <p className="label text-brand-orange">{t('project')}</p>
-          <p className="mt-1 line-clamp-3 text-[clamp(1rem,8cqw,2rem)] leading-tight font-bold tracking-tight">{title}</p>
+        <div className="absolute inset-x-0 top-0 hidden bg-gradient-to-b from-ink/80 via-ink/40 to-transparent px-[7%] pt-[6%] pb-[14%] @min-[200px]:block">
+          <p className="label text-brand-orange">{label}</p>
+          <p className="mt-1 line-clamp-2 text-[clamp(1rem,7cqw,1.75rem)] leading-tight font-bold tracking-tight">{title}</p>
         </div>
       )}
     </div>
   );
 }
 
-/** Sampul activity tanpa gambar: bingkai foto bertumpuk, menunggu foto diunggah. */
-function PolaroidPlaceholder({ title, className = '' }: { title?: string; className?: string }) {
-  const t = useTranslations('placeholder');
-  return (
-    <div className={`@container dot-bg relative flex flex-col items-center justify-center gap-[4%] overflow-hidden bg-surface-muted p-[4%] ${className}`}>
-      <div aria-hidden className="relative aspect-[5/6] h-[74%] min-h-0">
-        <span className="absolute inset-0 rotate-[5deg] rounded-sm bg-white shadow-md" />
-        <span className="absolute inset-0 flex -rotate-[4deg] flex-col rounded-sm bg-white p-[6%] shadow-lg">
-          <img src="/brand/mascot/good.webp" alt="" loading="lazy" className="min-h-0 w-full flex-1 object-cover" />
-          <span className="pt-1 text-center text-[clamp(0.55rem,3.6cqw,0.85rem)] leading-tight font-bold text-ink">{t('photoSoon')}</span>
-        </span>
-      </div>
-      {title && <p className="hidden w-full truncate text-center text-[clamp(0.8rem,4.6cqw,1.1rem)] font-bold text-heading @min-[200px]:block">{title}</p>}
-    </div>
-  );
-}
-
 export type CoverKind = 'project' | 'activity';
 
-export function Cover({ storageKey, alt, sizes, className = '', kind, title }: { storageKey: string | null; alt: string; sizes: string; className?: string; kind?: CoverKind; title?: string }) {
+/** `seed` memilih latar placeholder project bila judul sengaja tidak ditampilkan di sampul. */
+export function Cover({ storageKey, alt, sizes, className = '', kind, title, seed }: { storageKey: string | null; alt: string; sizes: string; className?: string; kind?: CoverKind; title?: string; seed?: string }) {
+  const t = useTranslations('placeholder');
   if (!storageKey) {
-    if (kind === 'project') return <BlueprintPlaceholder title={title} className={className} />;
-    if (kind === 'activity') return <PolaroidPlaceholder title={title} className={className} />;
+    if (kind) {
+      const src = kind === 'project' ? projectPlaceholder(seed ?? title) : ACTIVITY_PLACEHOLDER;
+      return <ScenePlaceholder src={src} label={t(kind)} title={title} className={className} />;
+    }
     return <CoverPlaceholder className={className} />;
   }
   return (
@@ -146,11 +146,11 @@ export function MemberPortrait({ name, photoKey }: { name: string; photoKey: str
   );
 }
 
-/** Kartu awak kapal. Border 2px bergradasi yang berputar mengelilingi isi kartu. */
+/** Kartu awak kapal. Border 4px bergradasi yang berputar mengelilingi isi kartu. */
 export function MemberCard({ href, name, photoKey, position, line }: { href: string; index: number; name: string; photoKey: string | null; position?: string; line?: string }) {
   return (
     <Link href={href} className="member-card member-border group on-dark cut-corner relative block aspect-[3/4] overflow-hidden text-white">
-      <span className="cut-corner absolute inset-[2px] overflow-hidden bg-ink">
+      <span className="cut-corner absolute overflow-hidden bg-ink" style={{ inset: 4 }}>
       <MemberPortrait name={name} photoKey={photoKey} />
       <span className="absolute inset-x-0 bottom-0 flex flex-col gap-1 bg-black/60 p-3 pr-6 backdrop-blur-md md:p-4 md:pr-7">
         {position && <span className="label text-brand-orange">{position}</span>}

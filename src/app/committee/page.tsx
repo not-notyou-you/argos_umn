@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { AuditTable } from '@/components/audit-table';
 import { PageHeader } from '@/components/ui';
 import { db } from '@/db';
-import { activities, involvementRequests, projects } from '@/db/schema';
+import { activities, involvementRequests, projectProposals, projects, timelineRequests } from '@/db/schema';
 import { requireCommittee } from '@/lib/auth';
 
 export const metadata = { title: 'Committee' };
@@ -12,13 +12,15 @@ export const metadata = { title: 'Committee' };
 export default async function CommitteeDashboard() {
   await requireCommittee();
   const t = await getTranslations('committee');
-  const [[requests], [draftProjects], [draftActivities]] = await Promise.all([
+  const [[requests], [timelineRequestCount], [proposalCount], [draftProjects], [draftActivities]] = await Promise.all([
     db.select({ n: count() }).from(involvementRequests).where(eq(involvementRequests.status, 'pending')),
+    db.select({ n: count() }).from(timelineRequests).where(eq(timelineRequests.status, 'pending')),
+    db.select({ n: count() }).from(projectProposals).where(eq(projectProposals.status, 'pending')),
     db.select({ n: count() }).from(projects).where(eq(projects.isPublished, false)),
     db.select({ n: count() }).from(activities).where(eq(activities.isPublished, false)),
   ]);
   const tiles = [
-    { href: '/committee/requests', label: t('pendingRequests'), value: requests.n },
+    { href: '/committee/requests', label: t('pendingRequests'), value: requests.n + timelineRequestCount.n + proposalCount.n },
     { href: '/committee/projects', label: t('draftProjects'), value: draftProjects.n },
     { href: '/committee/activities', label: t('draftActivities'), value: draftActivities.n },
   ];

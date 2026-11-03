@@ -139,7 +139,7 @@ Versi Inggris memakai prefix `/en` hanya untuk halaman publik. Area member dan k
 | `Header` | Sticky, logo helmet + "Argos Club @ UMN", navigasi, pemilih ID/EN, tombol Login atau menu akun. Di mobile menjadi drawer |
 | `Footer` | Latar `--ink`, logo putih, afiliasi TIOF, tautan resmi |
 | `Button` | Varian primary (`--teal-text`), accent (oranye + `--ink`), secondary (outline), danger. Tinggi 44 px |
-| `StatusBadge` | Selalu berteks. `done`: teal; `on progress`: oranye dengan teks `--orange-text`; `cancelled`: abu-abu |
+| `StatusBadge` | Selalu berteks. `open`: teal dengan garis putus-putus; `done`: teal; `on progress`: oranye dengan teks `--orange-text`; `cancelled`: abu-abu |
 | `ProjectCard`, `ActivityCard` | Media 16:10, logo kecil, nama, ringkasan 2 baris, badge/tanggal |
 | `MemberCard` | Foto heksagon, nama, jurusan, angkatan, posisi terkini |
 | `MediaGrid` | Foto utama besar, thumbnail, dan video jika ada. Bagian kosong tidak ditampilkan |
@@ -405,6 +405,7 @@ Kamus UI berada di `messages/id.json` dan `messages/en.json`. Konten dari databa
 | `project.open` | Open Project | Open Project |
 | `project.github` | Open GitHub | Open GitHub |
 | `project.docs` | Open Documentation | Open Documentation |
+| `status.open` | Open Recruitment | Open Recruitment |
 | `status.done` | Done | Done |
 | `status.onProgress` | On Progress | On Progress |
 | `status.cancelled` | Cancelled | Cancelled |

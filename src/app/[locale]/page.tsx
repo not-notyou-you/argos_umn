@@ -2,17 +2,43 @@
 import { ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 import { getLocale, getTranslations } from 'next-intl/server';
+import { ActivityChain } from '@/components/activity-chain';
 import { Carousel } from '@/components/carousel';
 import { ContentCard, Cover, StatusBadge } from '@/components/display';
 import { Helmet } from '@/components/helmet';
+import { InterlockGallery } from '@/components/interlock-gallery';
+import { ProjectFrame } from '@/components/project-frame';
 import { ArgosLogo, ButtonLink, Container, buttonClass } from '@/components/ui';
-import { getAbout, getCarousel, homeStats, listActivities, listProjects } from '@/lib/queries';
-import { excerpt, formatDate } from '@/lib/util';
+import { galleryItems, getAbout, getCarousel, homeStats, listActivities, listProjects } from '@/lib/queries';
+import { JOIN_URL, excerpt } from '@/lib/util';
 
 export const dynamic = 'force-dynamic';
 
 const FOCUS = ['hpc', 'ai', 'virtualization', 'cybersecurity', 'networking', 'bigData', 'erp'] as const;
-const JOIN_URL = 'https://join.theiofoundation.org';
+/** YYYY-MM-DD → DD/MM/YY, sesuai desain kartu aktivitas. */
+const shortDate = (d: string) => { const [y, m, day] = d.split('-'); return `${day}/${m}/${y.slice(2)}`; };
+
+/**
+ * Tombol panah setinggi 52px. Ujungnya selebar setengah tinggi (26px), jadi kemiringannya 45°,
+ * sama dengan chevron. Chevron berjarak sama dan yang terakhir sejajar dengan ujung panah.
+ */
+const SEE_ALL_ARROW = 'polygon(0 0, calc(100% - 26px) 0, 100% 50%, calc(100% - 26px) 100%, 0 100%)';
+/**
+ * Lima chevron setinggi penuh (45°, menembus tepi atas-bawah). Celah antar-chevron dan celah ke
+ * ujung panah sama dengan tebal garis, diukur tegak lurus. Pada garis 45°, jarak tegak lurus d
+ * sama dengan d × √2 secara mendatar. Ukuran tombol tidak berubah. Saat hover satu chevron padam
+ * bergiliran dari kiri ke kanan: >>>>> → _>>>> → >_>>> → … → >>>>_ → >>>>> (lihat chevron-blink di globals.css).
+ */
+const STROKE = 6;
+const STEP = 2 * STROKE * Math.SQRT2;
+const LEAD = 8;
+const CHEVRON_W = 30;
+const CHEVRON_COUNT = 5;
+// Setengah tebal garis chevron terakhir ditambah satu celah, lalu ujung panah.
+const CHEVRONS_W = LEAD + (CHEVRON_COUNT - 1) * STEP + CHEVRON_W + 1.5 * STROKE * Math.SQRT2;
+const CHEVRONS = Array.from({ length: CHEVRON_COUNT }, (_, i) => LEAD + i * STEP);
+/** Lama satu langkah animasi; satu putaran = (CHEVRON_COUNT + 1) langkah. */
+const BLINK_STEP_MS = 120;
 
 function LatestHeader({ title, href, action }: { title: string; href: string; action: string }) {
   return (
@@ -20,8 +46,25 @@ function LatestHeader({ title, href, action }: { title: string; href: string; ac
       <div>
         <h2 className="heading-xl">{title}</h2>
       </div>
-      <Link href={href} className="group inline-flex items-center gap-2 font-semibold text-teal-text">
-        {action} <ArrowUpRight size={18} aria-hidden className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+      {/* Tombol panah; saat hover chevron padam bergiliran tanpa mengubah ukuran tombol. */}
+      <Link
+        href={href}
+        className="see-all group inline-flex h-[52px] items-center gap-5 pl-7 text-lg font-extrabold tracking-[0.1em] uppercase"
+        style={{ clipPath: SEE_ALL_ARROW }}
+      >
+        {action}
+        <span aria-hidden className="block h-full overflow-hidden" style={{ width: CHEVRONS_W }}>
+          <svg viewBox={`0 0 ${CHEVRONS_W} 52`} style={{ width: CHEVRONS_W }} className="h-full" fill="none" stroke="currentColor" strokeWidth={STROKE} strokeLinecap="butt">
+            {CHEVRONS.map((x, i) => (
+              <polyline
+                key={x}
+                points={`${x},-4 ${x + CHEVRON_W},26 ${x},56`}
+                className="see-all-chevron"
+                style={{ animationDuration: `${(CHEVRON_COUNT + 1) * BLINK_STEP_MS}ms`, animationDelay: `${i * BLINK_STEP_MS}ms` }}
+              />
+            ))}
+          </svg>
+        </span>
       </Link>
     </div>
   );
@@ -33,15 +76,19 @@ export default async function HomePage() {
   const focus = await getTranslations('focus');
   const locale = await getLocale();
   const prefix = locale === 'id' ? '' : `/${locale}`;
-  const [about, slides, projects, activities, stats] = await Promise.all([
+  const [about, slides, projects, activities, stats, gallery] = await Promise.all([
     getAbout(),
     getCarousel(),
     listProjects({ limit: 4 }),
     listActivities({ limit: 8 }),
     homeStats(),
+    galleryItems('all', 40),
   ]);
-  const [lead, ...others] = projects;
-  const mosaic = activities.filter((a) => a.coverKey).slice(0, 3);
+  // Kumpulan foto untuk galeri About: foto galeri ditambah sampul activity, diacak tiap request.
+  const aboutPhotos = [...new Set([
+    ...gallery.items.filter((g) => g.media.kind === 'image' && g.media.storageKey).map((g) => g.media.storageKey!),
+    ...activities.map((a) => a.coverKey).filter((k): k is string => !!k),
+  ])].sort(() => Math.random() - 0.5);
   const statItems = [
     { value: stats.projects, label: t('statProjects') },
     { value: stats.activities, label: t('statActivities') },
@@ -86,13 +133,8 @@ export default async function HomePage() {
             <h2 className="statement">{about.aboutTitle}</h2>
             <p className="prose-text mt-6 text-lg leading-8">{about.aboutBody}</p>
           </div>
-          {mosaic.length === 3 ? (
-            <div className="reveal-right grid grid-cols-5 grid-rows-5 gap-3 aspect-[5/5]">
-              <Cover storageKey={mosaic[0].coverKey} alt="" sizes="360px" className="col-span-3 row-span-3 size-full rounded-md" />
-              <Cover storageKey={mosaic[1].coverKey} alt="" sizes="240px" className="col-span-2 row-span-2 size-full rounded-md" />
-              <div className="col-span-2 row-span-3 flex items-end justify-center rounded-md bg-ink p-4 text-white"><Helmet className="w-full" /></div>
-              <Cover storageKey={mosaic[2].coverKey} alt="" sizes="360px" className="col-span-3 row-span-2 size-full rounded-md" />
-            </div>
+          {aboutPhotos.length > 0 ? (
+            <InterlockGallery keys={aboutPhotos} className="reveal-right mx-auto w-full max-w-[460px]" />
           ) : (
             <ArgosLogo width={260} className="mx-auto h-auto" />
           )}
@@ -101,11 +143,8 @@ export default async function HomePage() {
 
       <section className="on-dark cut-top relative bg-ink pt-28 pb-20 text-white md:pb-28">
         <Container>
-          <div className="reveal grid gap-4 pb-10 md:grid-cols-2 md:items-end">
-            <div>
-              <h2 className="heading-xl text-white">{t('mainFocus')}</h2>
-            </div>
-            <p className="max-w-[46ch] text-lg leading-8 text-[#c9cdd2] md:justify-self-end">{t('focusIntro')}</p>
+          <div className="reveal pb-10">
+            <h2 className="heading-xl text-white">{t('mainFocus')}</h2>
           </div>
           <ul>
             {FOCUS.map((key, i) => (
@@ -118,27 +157,13 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {lead && (
+      {projects.length > 0 && (
         <section className="py-20 md:py-32">
           <Container>
             <LatestHeader title={t('latestProjects')} href={`${prefix}/projects`} action={t('seeAll')} />
-            <article className="reveal-scale group on-dark relative mb-6 overflow-hidden rounded-md bg-ink">
-              <Cover storageKey={lead.coverKey} alt="" sizes="(min-width: 1200px) 1136px, 100vw" className="zoom-img aspect-[4/3] w-full opacity-80 md:aspect-[21/9]" kind="project" />
-              <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
-              <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-4 p-5 md:p-10">
-                <div className="max-w-2xl">
-                  <StatusBadge status={lead.project.status} />
-                  <h3 className="heading-xl mt-3 text-white">
-                    <Link href={`${prefix}/projects/${lead.project.slug}`} className="after:absolute after:inset-0">{lead.project.name}</Link>
-                  </h3>
-                  <p className="mt-2 hidden text-[#d8dbdf] md:block">{excerpt(lead.project.description, 150)}</p>
-                </div>
-                <span className={`${buttonClass('accent')} hidden md:inline-flex`} aria-hidden>{p('view')} <ArrowUpRight size={18} /></span>
-              </div>
-            </article>
-            <div className="reveal-items grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {others.map(({ project, coverKey, logoKey }) => (
-                <ContentCard key={project.id} href={`${prefix}/projects/${project.slug}`} name={project.name} description={project.description} coverKey={coverKey} logoKey={logoKey} meta={<StatusBadge status={project.status} />} kind="project" />
+            <div className="reveal-items grid gap-8 sm:grid-cols-2">
+              {projects.map(({ project, coverKey }) => (
+                <ProjectFrame key={project.id} href={`${prefix}/projects/${project.slug}`} name={project.name} description={project.description} coverKey={coverKey} status={project.status} />
               ))}
             </div>
           </Container>
@@ -150,28 +175,18 @@ export default async function HomePage() {
           <Container>
             <LatestHeader title={t('latestActivities')} href={`${prefix}/activities`} action={t('seeAll')} />
           </Container>
-          <ul tabIndex={0} aria-label={t('scroll')} className="reveal flex snap-x gap-5 overflow-x-auto px-4 pb-4 md:px-8 lg:pl-[max(2rem,calc((100vw-1200px)/2+2rem))]">
-            {activities.map(({ activity, coverKey, logoKey }) => (
-              <li key={activity.id} className="w-[78vw] max-w-[340px] shrink-0 snap-start">
-                <ContentCard href={`${prefix}/activities/${activity.slug}`} name={activity.name} description={activity.description} coverKey={coverKey} logoKey={logoKey} meta={<p className="text-sm font-semibold text-teal-text">{formatDate(activity.activityDate, locale)}</p>} kind="activity" />
-              </li>
-            ))}
-          </ul>
+          <ActivityChain
+            label={t('scroll')}
+            items={activities.map(({ activity, coverKey }) => ({
+              id: activity.id,
+              href: `${prefix}/activities/${activity.slug}`,
+              name: activity.name,
+              date: shortDate(activity.activityDate),
+              cover: <Cover storageKey={coverKey} alt="" sizes="300px" kind="activity" title={activity.name} />,
+            }))}
+          />
         </section>
       )}
-
-      <section className="py-20 md:py-28">
-        <Container className="grid items-center gap-10 md:grid-cols-[auto_1fr]">
-          <div className="flex items-center gap-6">
-            <ArgosLogo width={120} className="h-auto" />
-            <img src="/brand/umn-logo.webp" alt="Universitas Multimedia Nusantara" width={104} className="h-auto" />
-          </div>
-          <div className="reveal md:border-l md:border-line md:pl-10">
-            <h2 className="text-[clamp(1.5rem,2.6vw,2.25rem)] leading-tight font-bold">{about.tiofTitle}</h2>
-            <p className="prose-text mt-3">{about.tiofBody}</p>
-          </div>
-        </Container>
-      </section>
 
       <section className="relative isolate overflow-clip bg-brand-orange py-20 text-ink md:py-28">
         <Helmet className="spin-scroll absolute top-1/2 -right-[6%] -z-10 w-[46%] -translate-y-1/2 text-ink/[0.08]" />

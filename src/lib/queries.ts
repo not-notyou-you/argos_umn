@@ -11,8 +11,10 @@ import {
   members,
   positions,
   projectMembers,
+  projectTimelineItems,
   projects,
   siteContent,
+  type ProjectStatus,
 } from '@/db/schema';
 import { type AboutContent, DEFAULT_ABOUT } from './about-defaults';
 import { isPositionActive, todayInJakarta } from './access';
@@ -34,7 +36,7 @@ export async function getCarousel({ activeOnly = true } = {}) {
     .orderBy(asc(carouselSlides.sortOrder));
 }
 
-type ProjectFilter = { status?: 'done' | 'on_progress' | 'cancelled'; q?: string; limit?: number };
+type ProjectFilter = { status?: ProjectStatus; q?: string; limit?: number };
 
 export async function listProjects({ status, q, limit }: ProjectFilter = {}) {
   const query = db
@@ -249,3 +251,23 @@ export async function homeStats() {
   `);
   return row;
 }
+
+/** Publik tidak pernah menerima deskripsi tahap, jadi kolomnya tidak dipilih sama sekali. */
+export async function projectTimeline(projectId: string, { withDescription = false } = {}) {
+  const rows = await db
+    .select({
+      id: projectTimelineItems.id,
+      title: projectTimelineItems.title,
+      startDate: projectTimelineItems.startDate,
+      endDate: projectTimelineItems.endDate,
+      status: projectTimelineItems.status,
+      completedAt: projectTimelineItems.completedAt,
+      ...(withDescription ? { description: projectTimelineItems.description } : {}),
+    })
+    .from(projectTimelineItems)
+    .where(eq(projectTimelineItems.projectId, projectId))
+    .orderBy(asc(projectTimelineItems.sortOrder), asc(projectTimelineItems.startDate));
+  return rows as (TimelineEntry & { description?: string })[];
+}
+
+export type TimelineEntry = { id: string; title: string; startDate: string; endDate: string; status: 'not_yet' | 'done'; completedAt: string | null };

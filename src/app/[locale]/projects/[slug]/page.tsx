@@ -4,11 +4,13 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
 import { DetailPage } from '@/components/detail';
-import { StatusBadge } from '@/components/display';
+import { StatusBadge, projectPlaceholder } from '@/components/display';
+import { TimelineView } from '@/components/timeline';
 import { buttonClass } from '@/components/ui';
 import { db } from '@/db';
 import { projects } from '@/db/schema';
-import { listProjects, mediaKey, ownerMedia, participants } from '@/lib/queries';
+import { todayInJakarta } from '@/lib/access';
+import { listProjects, mediaKey, ownerMedia, participants, projectTimeline } from '@/lib/queries';
 import { excerpt } from '@/lib/util';
 
 export const dynamic = 'force-dynamic';
@@ -28,11 +30,13 @@ export default async function ProjectDetail({ params }: Props) {
   const t = await getTranslations('project');
   const locale = await getLocale();
   const prefix = locale === 'id' ? '' : `/${locale}`;
-  const [media, team, logoKey, all] = await Promise.all([
+  const tl = await getTranslations('timeline');
+  const [media, team, logoKey, all, timeline] = await Promise.all([
     ownerMedia({ project: project.id }),
     participants('project', project.id),
     mediaKey(project.logoMediaId),
     listProjects(),
+    projectTimeline(project.id),
   ]);
   const position = all.findIndex((row) => row.project.id === project.id);
   const following = all.length > 1 ? all[(position + 1) % all.length].project : null;
@@ -58,6 +62,15 @@ export default async function ProjectDetail({ params }: Props) {
       teamLabel={t('team')}
       team={team}
       memberPrefix={prefix}
+      placeholderSrc={projectPlaceholder(project.name)}
+      extra={
+        project.status !== 'open' && timeline.length > 0 ? (
+          <div className="mt-12">
+            <h2 className="label pb-2 text-orange-text">{tl('title')}</h2>
+            <TimelineView items={timeline} today={todayInJakarta()} />
+          </div>
+        ) : undefined
+      }
       actions={
         buttons.length > 0 ? (
           <div className="flex flex-col gap-2">

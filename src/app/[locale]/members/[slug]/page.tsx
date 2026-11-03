@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getLocale, getTranslations } from 'next-intl/server';
-import { Cover, MemberPortrait, StatusBadge } from '@/components/display';
+import { Cover, type CoverKind, MemberPortrait, StatusBadge } from '@/components/display';
 import { Container } from '@/components/ui';
 import { db } from '@/db';
 import { media, members } from '@/db/schema';
@@ -44,10 +44,10 @@ export default async function MemberDetail({ params }: Props) {
   const showProjects = member.showProjects && involvement.projects.length > 0;
   const showActivities = member.showActivities && involvement.activities.length > 0;
 
-  const Item = ({ href, name, coverKey, meta }: { href: string; name: string; coverKey: string | null; meta: React.ReactNode }) => (
+  const Item = ({ href, name, coverKey, meta, kind }: { href: string; name: string; coverKey: string | null; meta: React.ReactNode; kind: CoverKind }) => (
     <li>
       <Link href={href} className="group flex h-full items-center gap-4 rounded-md bg-surface-muted p-3 transition-colors hover:bg-line">
-        <Cover storageKey={coverKey} alt="" sizes="112px" className="aspect-[4/3] w-28 shrink-0 rounded-sm" />
+        <Cover storageKey={coverKey} alt="" sizes="112px" className="aspect-[4/3] w-28 shrink-0 rounded-sm" kind={kind} seed={name} />
         <span className="flex min-w-0 flex-col items-start gap-1">
           <span className="line-clamp-2 font-semibold text-heading group-hover:text-teal-text">{name}</span>
           {meta}
@@ -99,7 +99,7 @@ export default async function MemberDetail({ params }: Props) {
             <section>
               <h2 className="text-2xl leading-8 font-bold">{t('projects')}</h2>
               <ul className="mt-6 grid gap-3 xl:grid-cols-2">
-                {involvement.projects.map((p) => <Item key={p.id} href={`${prefix}/projects/${p.slug}`} name={p.name} coverKey={p.coverKey} meta={<StatusBadge status={p.status} />} />)}
+                {involvement.projects.map((p) => <Item key={p.id} href={`${prefix}/projects/${p.slug}`} name={p.name} kind="project" coverKey={p.coverKey} meta={<StatusBadge status={p.status} />} />)}
               </ul>
             </section>
           )}
@@ -108,7 +108,7 @@ export default async function MemberDetail({ params }: Props) {
             <section>
               <h2 className="text-2xl leading-8 font-bold">{t('activities')}</h2>
               <ul className="mt-6 grid gap-3 xl:grid-cols-2">
-                {involvement.activities.map((a) => <Item key={a.id} href={`${prefix}/activities/${a.slug}`} name={a.name} coverKey={a.coverKey} meta={<span className="text-sm">{formatDate(a.activityDate, locale)}</span>} />)}
+                {involvement.activities.map((a) => <Item key={a.id} href={`${prefix}/activities/${a.slug}`} name={a.name} kind="activity" coverKey={a.coverKey} meta={<span className="text-sm">{formatDate(a.activityDate, locale)}</span>} />)}
               </ul>
             </section>
           )}

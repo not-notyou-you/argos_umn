@@ -44,7 +44,7 @@ export default async function GalleriesPage({ searchParams }: { searchParams: Pr
 
   return (
     <>
-    <PageHero title={t('title')} intro={t('intro')} />
+    <PageHero title={t('title')} />
     <Container className="py-12">
       <FilterBar>
         <FilterTabs>

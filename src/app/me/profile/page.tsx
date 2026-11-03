@@ -32,7 +32,7 @@ export default async function MyProfilePage() {
       .leftJoin(activities, eq(activities.id, involvementRequests.activityId))
       .where(eq(involvementRequests.memberId, member.id))
       .orderBy(desc(involvementRequests.createdAt)),
-    db.select({ id: projects.id, name: projects.name }).from(projects).where(eq(projects.isPublished, true)),
+    db.select({ id: projects.id, name: projects.name }).from(projects).where(and(eq(projects.isPublished, true), eq(projects.status, 'open'))),
     db.select({ id: activities.id, name: activities.name }).from(activities).where(and(eq(activities.isPublished, true))),
   ]);
 

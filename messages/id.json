@@ -15,8 +15,9 @@
     "skip": "Lewati ke konten",
     "language": "Bahasa",
     "loading": "Memuat",
-
-    "theme": "Ganti tema terang atau gelap"
+    "theme": "Ganti tema terang atau gelap",
+    "information": "Information",
+    "proposals": "Usulan Project"
   },
   "home": {
     "viewProjects": "Lihat Project",
@@ -46,7 +47,7 @@
     "wordShare": "Berbagi",
     "wordLead": "Memimpin",
     "scroll": "Geser untuk melihat aktivitas",
-    "focusIntro": "Tujuh bidang yang kami pelajari dan praktikkan bersama di Argos Club @ UMN.",
+    "swipe": "Swipe",
     "featured": "Project unggulan"
   },
   "focus": {
@@ -60,7 +61,6 @@
   },
   "project": {
     "title": "Our Project",
-    "intro": "Karya yang dibangun oleh member Argos Club @ UMN.",
     "back": "Our Project",
     "all": "Semua",
     "open": "Open Project",
@@ -77,20 +77,23 @@
   },
   "activity": {
     "title": "Our Activity",
-    "intro": "Kegiatan yang kami jalani bersama.",
     "back": "Our Activity",
     "about": "Tentang aktivitas",
     "team": "Yang terlibat",
     "empty": "Belum ada aktivitas.",
     "search": "Cari aktivitas",
     "next": "Aktivitas berikutnya",
-    "count": "{n} aktivitas"
+    "count": "{n} aktivitas",
+    "joinTitle": "Aktivitas berikutnya bisa jadi ceritamu.",
+    "joinBody": "Daftar sebagai anggota Argos Club untuk ikut workshop, kompetisi, dan project bersama. Pendaftaran resmi dilakukan melalui The IO Foundation.",
+    "joinCta": "Daftar jadi anggota"
   },
   "placeholder": {
     "project": "Project",
-    "photoSoon": "Foto segera hadir"
+    "activity": "Aktivitas"
   },
   "status": {
+    "open": "Open Recruitment",
     "done": "Done",
     "on_progress": "On Progress",
     "cancelled": "Cancelled"
@@ -123,7 +126,6 @@
     "typeProject": "Project",
     "typeActivity": "Aktivitas",
     "title": "The Galleries",
-    "intro": "Foto dan video dari project dan aktivitas kami.",
     "all": "Semua",
     "projects": "Project",
     "activities": "Aktivitas",
@@ -143,12 +145,10 @@
   },
   "footer": {
     "part": "Argos Club @ UMN adalah bagian dari Argos Clubs by The IO Foundation.",
-    "host": "Host university: Universitas Multimedia Nusantara",
     "links": "Tautan resmi",
     "site": "Situs Argos Clubs",
     "community": "TechUp Community",
-    "join": "Bergabung",
-    "tagline": "Komunitas teknologi mahasiswa UMN."
+    "join": "Bergabung"
   },
   "auth": {
     "title": "Masuk ke Argos Club",
@@ -208,10 +208,8 @@
   },
   "errors": {
     "forbiddenTitle": "Gerbang ini terkunci.",
-
     "forbiddenBody": "Akun kamu tidak punya akses ke halaman ini. Kalau seharusnya bisa, hubungi komite.",
     "notFoundTitle": "Kapal ini salah arah.",
-
     "notFoundBody": "Halaman yang kamu cari tidak ada atau sudah dipindahkan.",
     "home": "Kembali ke beranda",
     "seeProjects": "Lihat project",
@@ -364,6 +362,94 @@
     "entity": "Objek",
     "time": "Waktu",
     "searchMember": "Cari member",
-    "allStatuses": "Semua status"
+    "allStatuses": "Semua status",
+    "reasonRequired": "Feedback (wajib jika menolak)",
+    "tab_proposals": "Usulan project",
+    "tab_join": "Pendaftaran",
+    "tab_timeline": "Perubahan timeline",
+    "tab_history": "Riwayat",
+    "tabIntro_proposals": "Usulan project dari member. Jika diterima, project langsung dibuka sebagai open recruitment; penolakan wajib disertai feedback.",
+    "tabIntro_join": "Member yang ingin bergabung ke project open recruitment atau tercatat sebagai peserta aktivitas.",
+    "tabIntro_timeline": "Usulan perubahan status atau tanggal tahap dari anggota project yang sedang on progress.",
+    "tabIntro_history": "50 keputusan terakhir dari semua jenis request.",
+    "kindJoinProject": "Gabung project",
+    "kindJoinActivity": "Peserta aktivitas",
+    "joinNotOpen": "Project ini sudah tidak open recruitment.",
+    "noPendingTab": "Tidak ada request yang menunggu di kategori ini.",
+    "noHistory": "Belum ada keputusan."
+  },
+  "timeline": {
+    "title": "Timeline",
+    "intro": "Wajib diisi sebelum project dibuka. Publik melihat judul, tanggal, dan status setiap tahap, tanpa deskripsi.",
+    "itemTitle": "Judul tahap",
+    "start": "Mulai",
+    "end": "Selesai",
+    "state": "Status tahap",
+    "not_yet": "Belum",
+    "done": "Selesai",
+    "add": "Tambah tahap",
+    "empty": "Belum ada tahap timeline.",
+    "required": "Project open atau on progress wajib punya minimal satu tahap timeline.",
+    "membersRequired": "Project on progress wajib punya minimal satu anggota.",
+    "locked": "Project sudah done atau cancelled; anggota dan timeline tidak bisa diubah.",
+    "lockedNote": "Terkunci karena project sudah done atau cancelled. Ubah status untuk membukanya kembali.",
+    "invalid": "Isi judul dan tanggal; tanggal selesai tidak boleh sebelum tanggal mulai.",
+    "late": "Terlambat",
+    "onTime": "Tepat waktu",
+    "completedOn": "Selesai {date}",
+    "progress": "{done} dari {total} tahap selesai",
+    "requestTitle": "Ajukan perubahan",
+    "requestIntro": "Perubahan status atau tanggal tahap diputuskan oleh komite.",
+    "kind": "Jenis perubahan",
+    "kindStatus": "Status tahap",
+    "kindDates": "Tanggal tahap",
+    "proposedStatus": "Status usulan",
+    "evidenceUrl": "Tautan bukti (Drive, GitHub, dll.)",
+    "note": "Penjelasan",
+    "send": "Kirim pengajuan",
+    "evidenceRequired": "Pengajuan status wajib disertai penjelasan atau tautan bukti.",
+    "requests": "Pengajuan timeline",
+    "current": "Sekarang",
+    "proposed": "Usulan",
+    "evidence": "Bukti",
+    "applicants": "Pendaftar",
+    "noApplicants": "Belum ada pendaftar.",
+    "onlyOnProgress": "Pengajuan hanya bisa dikirim saat project on progress.",
+    "unchanged": "Usulan sama dengan kondisi sekarang."
+  },
+  "information": {
+    "title": "Information",
+    "intro": "Project dan acara yang sedang membuka pendaftaran.",
+    "projects": "Project open recruitment",
+    "activities": "Acara buka pendaftaran",
+    "noProjects": "Belum ada project yang membuka pendaftaran.",
+    "noActivities": "Belum ada acara yang membuka pendaftaran.",
+    "register": "Daftar",
+    "registerNote": "Alasan ingin bergabung (opsional)",
+    "joined": "Anda sudah menjadi anggota",
+    "goRegister": "Buka formulir pendaftaran",
+    "registrationOpen": "Pendaftaran dibuka",
+    "registrationUrl": "Tautan pendaftaran (dikelola The IO Foundation)",
+    "urlRequired": "Isi tautan pendaftaran sebelum membuka pendaftaran."
+  },
+  "proposal": {
+    "title": "Usulan Project",
+    "intro": "Usulkan project baru ke komite. Jika diterima, project langsung dibuka sebagai open recruitment dan kamu otomatis menjadi anggotanya.",
+    "name": "Judul project",
+    "descriptionHint": "Jelaskan masalah yang ingin diselesaikan, rencana teknis, dan manfaatnya.",
+    "timelineHint": "Minimal satu tahap. Komite memakai timeline ini untuk menilai kelayakan usulan.",
+    "stage": "Tahap {n}",
+    "submit": "Kirim usulan",
+    "mine": "Usulan saya",
+    "submittedOn": "Diajukan {date} · {n} tahap",
+    "feedback": "Feedback komite",
+    "openProject": "Buka project",
+    "invalid": "Isi judul dan deskripsi project.",
+    "timelineInvalid": "Timeline wajib minimal satu tahap; setiap tahap butuh judul dan tanggal, dan tanggal selesai tidak boleh sebelum tanggal mulai.",
+    "tooMany": "Kamu masih punya 3 usulan yang menunggu keputusan komite.",
+    "feedbackRequired": "Penolakan wajib disertai feedback untuk pengusul.",
+    "committeeTitle": "Usulan project",
+    "approveNote": "Jika diterima, project dibuat berstatus Open Recruitment, langsung dipublikasikan, dan pengusul menjadi anggota.",
+    "label": "Usulan"
   }
 }

@@ -9,6 +9,8 @@ export default async function MemberLayout({ children }: { children: ReactNode }
   const items = [
     { href: '/me/profile', label: t('myProfile') },
     { href: '/me/projects', label: t('myProjects') },
+    { href: '/me/information', label: t('information') },
+    { href: '/me/proposals', label: t('proposals') },
     ...(user.isCommittee ? [{ href: '/committee', label: t('committee') }] : []),
   ];
   return <Suspense><PanelShell title="Argos Club @ UMN" items={items}>{children}</PanelShell></Suspense>;

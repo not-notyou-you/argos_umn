@@ -63,7 +63,6 @@ export async function Footer() {
       <Container className="grid gap-10 py-14 md:grid-cols-[1.4fr_1fr_1fr] md:py-20">
         <div>
           <p className="text-[clamp(1.75rem,3.4vw,2.75rem)] leading-tight font-extrabold tracking-tight text-white">Argos Club<br />@ UMN</p>
-          <p className="mt-3">{t('tagline')}</p>
           <p className="mt-6 max-w-[38ch] text-sm leading-[22px]">{t('part')}</p>
         </div>
         <div className="flex flex-col gap-4">
@@ -71,7 +70,6 @@ export async function Footer() {
             <img src="/brand/argos-logo-white.png" alt="Argos Clubs" width={84} className="h-auto" />
             <img src="/brand/umn-logo.webp" alt="Universitas Multimedia Nusantara" width={72} className="h-auto" />
           </div>
-          <p className="text-sm leading-[22px]">{t('host')}</p>
         </div>
         <div>
           <p className="label text-brand-light-blue">{t('links')}</p>
